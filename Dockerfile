@@ -45,7 +45,6 @@ ENV DOLI_INSTALL_AUTO 1
 ENV DOLI_DB_TYPE mysqli
 ENV DOLI_DB_HOST mysql
 ENV DOLI_DB_HOST_PORT 3306
-ENV DOLI_DB_NAME dolidb
 
 ENV DOLI_URL_ROOT 'http://localhost'
 ENV DOLI_NOCSRFCHECK 0
@@ -104,7 +103,7 @@ RUN cd /var/www/dolidock/ &&\
     patch --fuzz=12 -p0 < pgsql-enable-ssl.diff 
 
 EXPOSE 80
-VOLUME /var/www/dolidock
+#VOLUME /var/www/dolidock
 
 ENTRYPOINT ["/usr/local/bin/docker-run.sh"]
 
