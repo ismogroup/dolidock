@@ -1,0 +1,11 @@
+--- html/core/db/pgsql.class.php.orig	2023-03-11 19:50:28.994719459 +0000
++++ html/core/db/pgsql.class.php	2023-03-11 19:52:12.822208139 +0000
+@@ -418,7 +418,7 @@
+ 
+ 		// try first Unix domain socket (local)
+ 		if ((!empty($host) && $host == "socket") && !defined('NOLOCALSOCKETPGCONNECT')) {
+-			$con_string = "dbname='".$name."' user='".$login."' password='".$passwd."'"; // $name may be empty
++			$con_string = "dsslmode=require bname='".$name."' user='".$login."' password='".$passwd."'"; // $name may be empty
+ 			try {
+ 				$this->db = @pg_connect($con_string);
+ 			} catch (Exception $e) {

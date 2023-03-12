@@ -1,0 +1,11 @@
+--- html/install/fileconf.php.orig	2023-03-11 19:47:59.955444741 +0000
++++ html/install/fileconf.php	2023-03-11 19:49:23.563039277 +0000
+@@ -657,7 +657,7 @@
+ 		ok=false;
+ 		alert('<?php echo dol_escape_js($langs->transnoentities("ErrorFieldRequired", $langs->transnoentitiesnoconv("DatabaseName"))); ?>');
+ 	}
+-	else if (! checkDatabaseName(document.forminstall.db_name.value))
++	else if (! checkDatabaseName(document.forminstall.db_name.value) && false)
+ 	{
+ 		ok=false;
+ 		alert('<?php echo dol_escape_js($langs->transnoentities("ErrorFieldCanNotContainSpecialCharacters", $langs->transnoentitiesnoconv("DatabaseName"))); ?>');

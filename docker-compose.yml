@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+    dolidock:
+        image: dolidock:latest
+        volumes:
+            - dolidock-data:/var/www/html/custom
+        environment:
+            DOLI_ADMIN_LOGIN: "administrator"
+            DOLI_ADMIN_PASSWORD: "admin456"
+            DOLI_DB_TYPE: mysql
+            DOLI_DB_HOST: mysql
+            DOLI_DB_HOST_PORT: 3306
+            DOLI_DB_NAME: dolismo
+            DOLI_URL_ROOT: 'http://0.0.0.0'
+            DOLI_DB_USER: 'doliadmin'
+            DOLI_DB_PASSWORD: 'doliadmin'
+            WWW_USER_ID: 1000
+            WWW_GROUP_ID: 1000
+        ports:
+            - "80:80"
+    mysql:
+        image: mysql:latest
+        environment:
+        - MYSQL_ROOT_PASSWORD=mysqlpassword
+        - MYSQL_DATABASE=dolismo
+        - MYSQL_USER=doliadmin
+        - MYSQL_PASSWORD=doliadmin
+        volumes:
+        - mysql-data:/var/lib/mysql
+        ports:
+        - 3306:3306
+        deploy:
+            resources:
+                limits:
+                    cpus: "0.5"
+                    memory: "500M"
+volumes:
+  dolidock-data:
+  mysql-data:
