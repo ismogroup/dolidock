@@ -27,6 +27,8 @@ stringData:
   CLOUDFLARE_API_KEY: ${CLOUDFLARE_API_KEY}
   POSTFIX_myhostname: ${POSTFIX_HOSTNAME}
   POSTFIX_helo_name: ${POSTFIX_HOSTNAME}
+  crontabui-user: $BASIC_AUTH_USER
+  crontabui-password: $BASIC_AUTH_PWD
 
 ---
 apiVersion: v1
@@ -41,7 +43,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 3Gi
   volumeMode: Filesystem
 status: {}
 
@@ -92,6 +94,16 @@ spec:
                 name: phpmyadmin      
                 port: 
                   number: 80
+    - host: crontabui-$OKTETO_NS.cloud.okteto.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: crontabui
+                port:
+                  number: 8000
 
 ---
 apiVersion: v1
@@ -448,3 +460,94 @@ spec:
               memory: "512M"
       restartPolicy: Always
 status: {}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: crontabui-data
+  name: crontabui-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeMode: Filesystem
+status: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: crontabui
+  name: crontabui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: crontabui
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.network/hcf-default: "true"
+        io.kompose.service: crontabui
+    spec:
+      containers:
+        - env:
+            - name: BASIC_AUTH_USER
+              valueFrom:
+                secretKeyRef:
+                  name: dolistock
+                  key: crontabui-user
+            - name: BASIC_AUTH_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: dolistock
+                  key: crontabui-password
+          image: highcanfly/crontab-ui:latest
+          name: crontabui
+          ports:
+            - containerPort: 8000
+          resources:
+            limits:
+              cpu: 250m
+              memory: "214748364"
+          volumeMounts:
+            - mountPath: /opt/cron
+              name: crontabui-data
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+      restartPolicy: Always
+      volumes:
+        - name: crontabui-data
+          persistentVolumeClaim:
+            claimName: crontabui-data
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: crontabui
+  name: crontabui
+spec:
+  ports:
+    - name: "8000"
+      port: 8000
+      targetPort: 8000
+  selector:
+    io.kompose.service: crontabui
+status:
+  loadBalancer: {}
+
