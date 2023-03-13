@@ -91,13 +91,16 @@ RUN a2dissite 000-default &&\
     echo "DocumentRoot /var/www/dolidock/html" >> /etc/apache2/sites-available/dolibarr.conf &&\
     echo "ErrorLog ${APACHE_LOG_DIR}/error.log" >> /etc/apache2/sites-available/dolibarr.conf &&\
     echo "CustomLog ${APACHE_LOG_DIR}/access.log combined" >> /etc/apache2/sites-available/dolibarr.conf &&\
+    echo "php_value error_reporting 0" >> /etc/apache2/sites-available/dolibarr.conf &&\
     echo "</VirtualHost>" >> /etc/apache2/sites-available/dolibarr.conf &&\
     a2ensite dolibarr
 RUN echo "<?php phpinfo();?>" >> /var/www/dolidock/html/phpinfo.php
 COPY patchs/fileconf-enable-dot-in-db-name.diff /var/www/dolidock/
+COPY patchs/bug-mod-user-unavailable.diff /var/www/dolidock/
 COPY patchs/pgsql-enable-ssl.diff /var/www/dolidock/
 RUN cd /var/www/dolidock/ &&\
     patch --fuzz=12 -p0 < fileconf-enable-dot-in-db-name.diff &&\
+    patch --fuzz=12 -p0 < bug-mod-user-unavailable.diff &&\
     patch --fuzz=12 -p0 < pgsql-enable-ssl.diff 
 
 EXPOSE 80
