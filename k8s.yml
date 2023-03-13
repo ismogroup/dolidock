@@ -332,7 +332,7 @@ metadata:
     io.kompose.service: dolidock
   name: dolidock
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       io.kompose.service: dolidock
