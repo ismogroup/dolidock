@@ -1,0 +1,11 @@
+--- html/societe/card.php.orig	2023-03-13 11:08:13.425602652 +0000
++++ html/societe/card.php	2023-03-13 11:09:03.813353246 +0000
+@@ -886,7 +886,7 @@
+ 
+ 
+ 				// Update linked member
+-				if (!$error && $object->fk_soc > 0) {
++				if (!$error && isset($object->fk_soc) && $object->fk_soc > 0) {
+ 					$sql = "UPDATE ".MAIN_DB_PREFIX."adherent";
+ 					$sql .= " SET fk_soc = NULL WHERE fk_soc = ".((int) $socid);
+ 					if (!$object->db->query($sql)) {
