@@ -227,6 +227,11 @@ DOLI_DB_PASSWORD=$(get_env_value 'DOLI_DB_PASSWORD' 'doli_pass')
 DOLI_ADMIN_LOGIN=$(get_env_value 'DOLI_ADMIN_LOGIN' 'admin')
 DOLI_ADMIN_PASSWORD=$(get_env_value 'DOLI_ADMIN_PASSWORD' 'admin')
 
+#create php session dir if not exists
+mkdir -p /var/www/dolidock/documents/sessions
+#clean old sesssions
+rm -rf /var/www/dolidock/documents/sessions/*
+
 run
 
 set -e

@@ -77,8 +77,7 @@ RUN apt-get update -y \
     apt-get update -y &&\
     apt-get install -y --no-install-recommends mysql-client
 COPY docker-run.sh /usr/local/bin/
-RUN mkdir -p /var/www/dolidock/documents && \
-    mkdir -p /var/www/dolidock/html/custom && \
+RUN mkdir -p /var/www/dolidock/html/custom && \
     curl -fLSs https://github.com/Dolibarr/dolibarr/archive/${DOLI_VERSION}.tar.gz |\
     tar -C /tmp -xz && \
     cp -r /tmp/dolibarr-${DOLI_VERSION}/htdocs/* /var/www/dolidock/html/ && \
@@ -92,6 +91,7 @@ RUN a2dissite 000-default &&\
     echo "ErrorLog ${APACHE_LOG_DIR}/error.log" >> /etc/apache2/sites-available/dolibarr.conf &&\
     echo "CustomLog ${APACHE_LOG_DIR}/access.log combined" >> /etc/apache2/sites-available/dolibarr.conf &&\
     echo "php_value error_reporting 0" >> /etc/apache2/sites-available/dolibarr.conf &&\
+    echo "php_value session.save_path /var/www/dolidock/documents/sessions" >> /etc/apache2/sites-available/dolibarr.conf &&\
     echo "</VirtualHost>" >> /etc/apache2/sites-available/dolibarr.conf &&\
     a2ensite dolibarr
 RUN echo "<?php phpinfo();?>" >> /var/www/dolidock/html/phpinfo.php
@@ -104,7 +104,7 @@ RUN cd /var/www/dolidock/ &&\
     patch --fuzz=12 -p0 < pgsql-enable-ssl.diff 
 
 EXPOSE 80
-#VOLUME /var/www/dolidock
+VOLUME /var/www/dolidock
 
 ENTRYPOINT ["/usr/local/bin/docker-run.sh"]
 
