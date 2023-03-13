@@ -63,3 +63,4 @@ Ingress hosts are:
 
 I don't know why but the Users and Groups active is not automatically active. Just enable it.  
 Some warnings may appear in the frontend.  
+DOLI_DB_USER may not have RELOAD privilege on database, open a shell to the mysql container and grant it the privilege if needed.
