@@ -4,7 +4,7 @@ services:
     dolidock:
         image: dolidock:latest
         volumes:
-            - dolidock-data:/var/www/dolidock
+            - dolidock-data:/var/www/dolidock/documents
         environment:
             DOLI_ADMIN_LOGIN: ${DOLI_ADMIN_LOGIN}
             DOLI_ADMIN_PASSWORD: ${DOLI_ADMIN_PASSWORD}
@@ -35,6 +35,26 @@ services:
                 limits:
                     cpus: "0.5"
                     memory: "500M"
+    smtpd:
+        image: ismogroup/docker-smtp-relay:latest
+        environment:
+            ALLOWED_SENDER_DOMAINS: ${ALLOWED_SENDER_DOMAINS}
+            DKIM_PRIVATE_KEY: ${DKIM_PRIVATE_KEY}
+            DKIM_SELECTOR: ${DKIM_SELECTOR}
+            POSTFIX_HOSTNAME: ${POSTFIX_HOSTNAME}
+            CLOUDFLARE_ZONE_ID: ${CLOUDFLARE_ZONE_ID}
+            CLOUDFLARE_API_KEY: ${CLOUDFLARE_API_KEY}
+            POSTFIX_myhostname: ${POSTFIX_HOSTNAME}
+            POSTFIX_helo_name: ${POSTFIX_HOSTNAME}
+        volumes:
+            - dolidock-data:/var/www/dolidock/documents
+        ports:
+        - "25"
+        deploy:
+            resources:
+                limits:
+                    cpus: "0.5"
+                    memory: "0.3G"
 volumes:
   dolidock-data:
   mysql-data:
