@@ -379,7 +379,7 @@ spec:
             - name: DOLI_DB_HOST_PORT
               value: '3306'
             - name: DOLI_URL_ROOT
-              value: 'http://0.0.0.0'
+              value: 'https://${OKTETO_FQDN_DOLISTOCK}'
             - name: WWW_USER_ID
               value: '1000'
             - name: WWW_GROUP_ID
