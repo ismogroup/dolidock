@@ -372,6 +372,11 @@ spec:
                 secretKeyRef:
                   name: dolistock
                   key: DOLI_DB_PASSWORD
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dolistock
+                  key: MYSQL_ROOT_PASSWORD
             - name: DOLI_DB_TYPE
               value: mysqli
             - name: DOLI_DB_HOST

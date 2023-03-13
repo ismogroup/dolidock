@@ -15,6 +15,7 @@ services:
             DOLI_URL_ROOT: 'http://0.0.0.0'
             DOLI_DB_USER: ${DOLI_DB_USER}
             DOLI_DB_PASSWORD: ${DOLI_DB_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
             WWW_USER_ID: 1000
             WWW_GROUP_ID: 1000
         ports:
