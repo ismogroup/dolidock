@@ -49,7 +49,7 @@ BASIC_AUTH_PWD="latestpassword"
 For developping I'm using Okteto free tier.  
 If you have an Okteto account, retrieve the kube config (settings Kubernetes credentials), and if you have all the required environment variables issue:  
 ```sh
-envsubst < k8s.yml | kubectl apply --kubeconfig .vscode/okteto-kube.config -f -
+envsubst < k8s.yml | kubectl apply --kubeconfig okteto-kube.config -f -
 ```
 It will deploy a cluster with 3 web frontend, an Oracle MySql 8 server, a phpmyadmin web server and a crontabui server.  
 Ingress hosts are:  
