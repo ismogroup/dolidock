@@ -1,4 +1,4 @@
-FROM ${ARCH}php:8.2.3-apache-bullseye AS builder
+FROM ${ARCH}php:apache-bullseye AS builder
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 
 RUN apt-get update -y \
@@ -33,7 +33,7 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Get Dolibarr
-FROM ${ARCH}php:8.2.3-apache-bullseye
+FROM ${ARCH}php:apache-bullseye
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
@@ -94,7 +94,6 @@ RUN a2dissite 000-default &&\
     echo "php_value session.save_path /var/www/dolidock/documents/sessions" >> /etc/apache2/sites-available/dolibarr.conf &&\
     echo "</VirtualHost>" >> /etc/apache2/sites-available/dolibarr.conf &&\
     a2ensite dolibarr
-RUN echo "<?php phpinfo();?>" >> /var/www/dolidock/html/phpinfo.php
 COPY patchs/fileconf-enable-dot-in-db-name.diff /var/www/dolidock/
 COPY patchs/bug-mod-user-unavailable.diff /var/www/dolidock/
 COPY patchs/pgsql-enable-ssl.diff /var/www/dolidock/
@@ -104,7 +103,7 @@ RUN cd /var/www/dolidock/ &&\
     patch --fuzz=12 -p0 < pgsql-enable-ssl.diff 
 
 EXPOSE 80
-VOLUME /var/www/dolidock
+VOLUME /var/www/dolidock/documents
 
 ENTRYPOINT ["/usr/local/bin/docker-run.sh"]
 
