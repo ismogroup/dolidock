@@ -42,3 +42,24 @@ POSTFIX_HOSTNAME="smtp.example.org"
 BASIC_AUTH_USER="admin"
 BASIC_AUTH_PWD="latestpassword"
 ```
+
+
+## Deploy on Okteto
+
+For developping I'm using Okteto free tier.  
+If you have an Okteto account, retrieve the kube config (settings Kubernetes credentials), and if you have all the required environment variables issue:  
+```sh
+envsubst < k8s.yml | kubectl apply --kubeconfig .vscode/okteto-kube.config -f -
+```
+It will deploy a cluster with 3 web frontend, an Oracle MySql 8 server, a phpmyadmin web server and a crontabui server.  
+Ingress hosts are:  
+| URL | Use |  
+| ---------------------------------------- | ---------- |  
+| https://admin-OKTETO_NS.cloud.okteto.net | phpMyAdmin |  
+| https://OKTETO_FQDN_DOLISTOCK | Dolibarr |  
+| https://crontabui-$OKTETO_NS.cloud.okteto.net | CrontabUI |  
+
+## Known issues
+
+I don't know why but the Users and Groups active is not automatically active. Just enable it.  
+Some warnings may appear in the frontend.  
