@@ -21,6 +21,7 @@ RUN apt-get update -y \
         apt-get update -y &&\
         apt-get install -y --no-install-recommends mysql-client \
     && apt-get autoremove -y \
+    && docker-php-ext-install opcache \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) calendar intl mysqli pdo_mysql gd soap zip \
     && docker-php-ext-configure pgsql -with-pgsql \
