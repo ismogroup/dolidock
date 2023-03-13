@@ -1,0 +1,11 @@
+--- html/core/modules/supplier_proposal/mod_supplier_proposal_saphir.php.orig	2023-03-13 17:11:47.986645058 +0000
++++ html/core/modules/supplier_proposal/mod_supplier_proposal_saphir.php	2023-03-13 17:12:28.822458677 +0000
+@@ -83,7 +83,7 @@
+ 		$tooltip .= $langs->trans("GenericMaskCodes4a", $langs->transnoentities("CommRequest"), $langs->transnoentities("CommRequest"));
+ 		$tooltip .= $langs->trans("GenericMaskCodes5");
+ 
+-		$mask = dolGetGlobalString('SUPPLIER_PROPOSAL_SAPHIR_MASK');
++		$mask = getDolGlobalString('SUPPLIER_PROPOSAL_SAPHIR_MASK');
+ 
+ 		// Parametrage du prefix
+ 		$texte .= '<tr><td>'.$langs->trans("Mask").':</td>';
