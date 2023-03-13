@@ -1,0 +1,15 @@
+--- html/core/modules/expensereport/doc/pdf_standard.modules.php.orig	2023-03-13 15:10:19.434982300 +0000
++++ html/core/modules/expensereport/doc/pdf_standard.modules.php	2023-03-13 15:10:55.070806341 +0000
+@@ -146,9 +146,9 @@
+ 		// Define position of columns
+ 		$this->posxpiece = $this->marge_gauche + 1;
+ 		$this->posxcomment = $this->marge_gauche + 10;
+-		//$this->posxdate=88;
+-		//$this->posxtype=107;
+-		//$this->posxprojet=120;
++		$this->posxdate=88;
++		$this->posxtype=107;
++		$this->posxprojet=120;
+ 		$this->posxtva = 112;
+ 		$this->posxup = 127;
+ 		$this->posxqty = 150;

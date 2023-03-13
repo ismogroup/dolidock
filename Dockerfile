@@ -99,11 +99,13 @@ COPY patchs/fileconf-enable-dot-in-db-name.diff /var/www/dolidock/
 COPY patchs/bug-mod-user-unavailable.diff /var/www/dolidock/
 COPY patchs/pgsql-enable-ssl.diff /var/www/dolidock/
 COPY patchs/bug-fk-soc-tier.diff /var/www/dolidock/
+COPY patchs/bug-margin-pdf.diff /var/www/dolidock/
 RUN cd /var/www/dolidock/ &&\
     patch --fuzz=12 -p0 < fileconf-enable-dot-in-db-name.diff &&\
     patch --fuzz=12 -p0 < bug-mod-user-unavailable.diff &&\
     patch --fuzz=12 -p0 < pgsql-enable-ssl.diff &&\
     patch --fuzz=12 -p0 < bug-fk-soc-tier.diff &&\
+    patch --fuzz=12 -p0 < bug-margin-pdf.diff &&\
     rm -f *.diff
 
 EXPOSE 80
