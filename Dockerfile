@@ -1,4 +1,4 @@
-FROM ${ARCH}php:apache-bullseye AS builder
+FROM ${ARCH}php:8.1-apache AS builder
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 
 RUN apt-get update -y \
@@ -34,7 +34,7 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Get Dolibarr
-FROM ${ARCH}php:apache-bullseye
+FROM ${ARCH}php:8.1-apache
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
