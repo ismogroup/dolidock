@@ -36,6 +36,23 @@ services:
                 limits:
                     cpus: "0.5"
                     memory: "500M"
+    dolirate:
+        image: ismogroup/dolirate:latest
+        environment:
+            MYSQL_HOST: mysql
+            MYSQL_PORT: 3306
+            DOLI_DB_USER: ${DOLI_DB_USER}
+            DOLI_DB_PASSWORD: ${DOLI_DB_PASSWORD}
+            DOLI_DB_PREFIX: 'llx_'
+            DOLI_DB_NAME: ${DOLI_DB_NAME}
+            API_LAYER_KEY: ${API_LAYER_KEY}
+        ports:
+        - 3000:3000
+        deploy:
+            resources:
+                limits:
+                    cpus: "0.25"
+                    memory: "100M"
     smtpd:
         image: ismogroup/docker-smtp-relay:latest
         environment:
