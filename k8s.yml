@@ -151,7 +151,7 @@ spec:
         kompose.version: 1.28.0 (c4137012e)
       creationTimestamp: null
       labels:
-        io.kompose.network/hcf-default: "true"
+        io.kompose.network/dolidock-default: "true"
         io.kompose.service: smtpd
     spec:
       containers:
@@ -260,7 +260,7 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.network/hcf-default: "true"
+        io.kompose.network/dolidock-default: "true"
         io.kompose.service: mysql
     spec:
       containers:
@@ -343,7 +343,7 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.network/hcf-default: "true"
+        io.kompose.network/dolidock-default: "true"
         io.kompose.service: dolidock
     spec:
       containers:
@@ -449,7 +449,7 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.network/hcf-default: "true"
+        io.kompose.network/dolidock-default: "true"
         io.kompose.service: phpmyadmin
     spec:
       containers:
@@ -503,7 +503,7 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.network/hcf-default: "true"
+        io.kompose.network/dolidock-default: "true"
         io.kompose.service: crontabui
     spec:
       containers:
@@ -594,7 +594,7 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.network/hcf-default: "true"
+        io.kompose.network/dolidock-default: "true"
         io.kompose.service: dolirate
     spec:
       containers:
@@ -638,6 +638,24 @@ spec:
             runAsGroup: 0
       restartPolicy: Always
 status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: memcached
+  name: memcached
+spec:
+  ports:
+    - name: "11211"
+      port: 11211
+      targetPort: 11211
+  selector:
+    io.kompose.service: memcached
+status:
+  loadBalancer: {}
 
 ---
 apiVersion: apps/v1
