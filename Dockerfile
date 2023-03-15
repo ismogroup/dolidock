@@ -1,4 +1,5 @@
 FROM ${ARCH}php:8.1-apache AS builder
+ARG TARGETARCH
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 
 RUN apt-get update -y \
@@ -18,10 +19,14 @@ RUN apt-get update -y \
         lsb-release wget vim gnupg \
         postgresql-client \
         cron \
-    && curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb > /tmp/mysql-apt-config_0.8.22-1_all.deb && \
-        DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.22-1_all.deb && \
-        apt-get update -y &&\
-        apt-get install -y --no-install-recommends mysql-client \
+    &&  case ${TARGETARCH} in \
+            "amd64")  curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb > /tmp/mysql-apt-config_0.8.22-1_all.deb && \
+                        DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.22-1_all.deb && \
+                        apt-get update -y &&\
+                        apt-get install -y --no-install-recommends mysql-client ;; \
+            "arm64")  apt-get update -y &&\
+                        apt-get install -y --no-install-recommends default-mysql-client   ;; \
+        esac \
     && apt-get autoremove -y \
     && docker-php-ext-install opcache \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
