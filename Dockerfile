@@ -14,6 +14,7 @@ RUN apt-get update -y \
         libpq-dev \
         libxml2-dev \
         libzip-dev \
+        libbz2-dev \
         lsb-release wget vim gnupg \
         postgresql-client \
         cron \
@@ -30,7 +31,9 @@ RUN apt-get update -y \
     && docker-php-ext-configure ldap --with-libdir=lib/$(gcc -dumpmachine)/ \
     && docker-php-ext-install -j$(nproc) ldap \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
-    && docker-php-ext-install imap
+    && docker-php-ext-install imap \
+    && docker-php-ext-configure bz2 \
+    && docker-php-ext-install bz2
 RUN apt-get install -y --no-install-recommends libmemcached-dev && \
     mkdir -p /usr/src/php/ext/memcached && \
     git clone https://github.com/php-memcached-dev/php-memcached /usr/src/php/ext/memcached && \
