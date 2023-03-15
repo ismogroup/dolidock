@@ -1,4 +1,4 @@
-[![Publish image to docker Hub](https://github.com/ismogroup/dolidock/actions/workflows/publish-docker-hub.yml/badge.svg)](https://github.com/ismogroup/dolidock/actions/workflows/publish-docker-hub.yml)
+[![Publish image to docker Hub](https://github.com/ismogroup/dolidock/actions/workflows/publish-docker-hub.yml/badge.svg)](https://hub.docker.com/r/ismogroup/dolidock)
 # Dolibarr on Docker
 
 Docker image for Dolibarr 17.0.0 with auto installer on first boot.
@@ -8,6 +8,20 @@ Docker image for Dolibarr 17.0.0 with auto installer on first boot.
 Dolibarr ERP & CRM is a modern software package to manage your organization's activity (contacts, suppliers, invoices, orders, stocks, agenda, ...).
 
 > [More information](https://github.com/dolibarr/dolibarr)
+
+## What differs ?
+### Docker image
+- Use latest MySql libraries from Oracle/MySql
+- Supports bzip2 compression for backup
+- Can be scaled up (php session are shared) / tested up to 4 replicas
+- php-memcached
+- Contains all Dolicloud/DoliMods module
+### Docker Compose stack / Kubernetes
+- builtin Postfix server with dkim signing and Cloudflare DDNS (scalable)
+- builin memcached server
+- builtin phpMyAdmin server
+- builtin cron server with web ui and cloud commander
+
 
 ## How to ?
 
