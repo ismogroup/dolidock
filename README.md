@@ -1,3 +1,4 @@
+[![Publish image to docker Hub](https://github.com/ismogroup/dolidock/actions/workflows/publish-docker-hub.yml/badge.svg)](https://github.com/ismogroup/dolidock/actions/workflows/publish-docker-hub.yml)
 # Dolibarr on Docker
 
 Docker image for Dolibarr 17.0.0 with auto installer on first boot.
