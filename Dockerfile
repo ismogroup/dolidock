@@ -32,6 +32,11 @@ RUN apt-get update -y \
     && docker-php-ext-install imap \
     && mv ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini \
     && rm -rf /var/lib/apt/lists/*
+RUN cd / && apt-get update -y &&\
+    apt-get install -y --no-install-recommends p7zip-full git &&\
+    git clone https://github.com/DoliCloud/DoliMods.git && \
+    cd /DoliMods/build && rm -f makepack-FacturX.conf makepack-Verifystock.conf && echo "all" | perl makepack-dolibarrmodule.pl && \
+    mkdir /custom && for ZIP in *.zip; do 7z x -y -o/custom $ZIP; done
 
 # Get Dolibarr
 FROM ${ARCH}php:8.1-apache
@@ -109,7 +114,7 @@ RUN cd /var/www/dolidock/ &&\
     patch --fuzz=12 -p0 < bug-margin-pdf.diff &&\
     patch --fuzz=12 -p0 < bug-saphir.diff &&\
     rm -f *.diff
-
+COPY --from=builder /custom/htdocs /var/www/dolidock/html/custom/
 EXPOSE 80
 VOLUME /var/www/dolidock/documents
 
