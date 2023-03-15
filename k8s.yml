@@ -139,7 +139,7 @@ metadata:
     io.kompose.service: smtpd
   name: smtpd
 spec:
-  replicas: 2
+  replicas: ${SMTPD_REPLICAS}
   selector:
     matchLabels:
       io.kompose.service: smtpd
@@ -333,7 +333,7 @@ metadata:
     io.kompose.service: dolidock
   name: dolidock
 spec:
-  replicas: 3
+  replicas: ${DOLIDOCK_REPLICAS}
   selector:
     matchLabels:
       io.kompose.service: dolidock
