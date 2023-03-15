@@ -34,7 +34,7 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/*
 RUN cd / && apt-get update -y &&\
     apt-get install -y --no-install-recommends p7zip-full git &&\
-    git clone https://github.com/DoliCloud/DoliMods.git && \
+    git clone https://github.com/highcanfly-club/DoliMods.git && \
     cd /DoliMods/build && rm -f makepack-FacturX.conf makepack-Verifystock.conf && echo "all" | perl makepack-dolibarrmodule.pl && \
     mkdir /custom && for ZIP in *.zip; do 7z x -y -o/custom $ZIP; done
 
