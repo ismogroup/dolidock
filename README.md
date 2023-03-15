@@ -102,18 +102,18 @@ echo $DKIM_PRIVATE_KEY | tr '|' '\n' | openssl rsa -pubout 2> /dev/null | sed -e
 ## SMTPd server
 In the Docker docker-compose.yml and the Kubernetes k8s.yml a Postfix server is deployed.  
 It contains a DKIM signer, a DDNS update script for Cloudflare DNS and a Letsencrypt autorenew certificate.  
-For having it runnig you need a [Cloudflare](https://dash.cloudflare.com/login) zone the free account is sufficient.  
+For having it runnig you need a [Cloudflare](https://dash.cloudflare.com/login) zone (the free account is sufficient).  
 If you don't own a domain you can find free subdomains on internet accepting Cloudflare as a subdomain dns.  
 While you have a running Cloudflare zone, 
-- lookat your zone id and store it as CLOUDFLARE_ZONE_ID .
-- In Cloudflare overview page hit [Get your API token](https://dash.cloudflare.com/profile/api-tokens) and issue a token with DNS Edit right on your zone. Sotre this token as CLOUDFLARE_API_KEY  
-- In the Cloudflare DNS view create a A record pointing to any IP address (it will be updated automatically) and store the full fqdn record in CLOUDFLARE_DNS_RECORDS  
-- In the Cloudflare DNS view create a TXT record with name @ and value v=spf1 a:CLOUDFLARE_DNS_RECORDS ~all
-- In the Cloudflare DNS view create a TXT record with name DKIM_SELECTOR._domainkey and the value you computed previously with your DKIM_PRIVATE_KEY variable
-With that the SMTPd container will check automatically your public ip adress, publish if at Cloudflare so all outgoing emails will come for a valid MX host (the spf record) and will be signed with a valid dkim key.  
+- look at your zone id and store it as CLOUDFLARE_ZONE_ID .
+- In Cloudflare overview, page hit [Get your API token](https://dash.cloudflare.com/profile/api-tokens) and issue a token with DNS Edit right on your zone. Store this token as CLOUDFLARE_API_KEY  
+- In the Cloudflare DNS view, create a A record pointing to any IP address (it will be updated automatically) and store the full fqdn record in CLOUDFLARE_DNS_RECORDS  
+- In the Cloudflare DNS view, create a TXT record with name "@"" and value "v=spf1 a:CLOUDFLARE_DNS_RECORDS ~all"
+- In the Cloudflare DNS view, create a TXT record with name "DKIM_SELECTOR._domainkey" and the value you computed previously with your DKIM_PRIVATE_KEY variable
+With that the SMTPd container will check automatically your public ip adress, publish it at Cloudflare. So all outgoing emails will come for a valid MX host (the spf record) and will be signed with a valid dkim key. This is important for spam checking.   
 
 ## Dolirate
-If needed a Dolirate container is deployed. 
+If needed a [Dolirate](https://github.com/ismogroup/dolirate) container is deployed. 
 
 ## Crontab-UI
 A custom [Crontab-ui](https://github.com/highcanfly-club/crontab-ui) is deployed.  
