@@ -73,6 +73,9 @@ services:
                 limits:
                     cpus: "0.5"
                     memory: "0.3G"
+    memcached:
+        image: memcached:alpine
+        command: memcached -m 1024
 volumes:
   dolidock-data:
   mysql-data:

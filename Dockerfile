@@ -4,6 +4,7 @@ LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 RUN apt-get update -y \
     && apt-get dist-upgrade -y \
     && apt-get install -y --no-install-recommends \
+        git \
         libc-client-dev \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
@@ -29,11 +30,17 @@ RUN apt-get update -y \
     && docker-php-ext-configure ldap --with-libdir=lib/$(gcc -dumpmachine)/ \
     && docker-php-ext-install -j$(nproc) ldap \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
-    && docker-php-ext-install imap \
+    && docker-php-ext-install imap
+RUN apt-get install -y --no-install-recommends libmemcached-dev && \
+    mkdir -p /usr/src/php/ext/memcached && \
+    git clone https://github.com/php-memcached-dev/php-memcached /usr/src/php/ext/memcached && \
+    docker-php-ext-configure /usr/src/php/ext/memcached --disable-memcached-sasl \
+    && docker-php-ext-install /usr/src/php/ext/memcached \
+    && rm -rf /usr/src/php/ext/memcached \
     && mv ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini \
     && rm -rf /var/lib/apt/lists/*
 RUN cd / && apt-get update -y &&\
-    apt-get install -y --no-install-recommends p7zip-full git &&\
+    apt-get install -y --no-install-recommends p7zip-full &&\
     git clone https://github.com/highcanfly-club/DoliMods.git && \
     cd /DoliMods/build && rm -f makepack-FacturX.conf makepack-Verifystock.conf && echo "all" | perl makepack-dolibarrmodule.pl && \
     mkdir /custom && for ZIP in *.zip; do 7z x -y -o/custom $ZIP; done
@@ -77,7 +84,7 @@ RUN apt-get update -y \
     && apt-get dist-upgrade -y \
     && apt-get install -y --no-install-recommends \
         curl libzip4 libc-client2007e postgresql-client libpng16-16 \
-        libjpeg62-turbo libfreetype6 lsb-release wget vim gnupg &&\
+        libjpeg62-turbo libfreetype6 lsb-release wget vim gnupg libmemcached11 &&\
     curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb > /tmp/mysql-apt-config_0.8.22-1_all.deb && \
     DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.22-1_all.deb && \
     apt-get update -y &&\
