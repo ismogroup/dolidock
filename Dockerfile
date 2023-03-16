@@ -102,6 +102,11 @@ RUN echo "Run for $TARGETARCH" && \
         apt-get update -y &&\
         apt-get install -y --no-install-recommends default-mysql-client ; \
     fi
+RUN apt-get update -y \
+    && apt-get dist-upgrade -y \
+    && apt-get install -y --no-install-recommends \
+        curl libzip4 libc-client2007e postgresql-client libpng16-16 \
+        libjpeg62-turbo libfreetype6 vim libmemcached11
 COPY docker-run.sh /usr/local/bin/
 RUN mkdir -p /var/www/dolidock/html/custom && \
     curl -fLSs https://github.com/Dolibarr/dolibarr/archive/${DOLI_VERSION}.tar.gz |\
