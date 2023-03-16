@@ -16,6 +16,8 @@ Dolibarr ERP & CRM is a modern software package to manage your organization's ac
 - Can be scaled up (php session are shared) / tested up to 4 replicas
 - php-memcached
 - Contains all Dolicloud/DoliMods module
+- linux/amd64 and linux/arm64 platform (on arm db client is MariaDB, Mysql on amd64 )
+
 ### Docker Compose stack / Kubernetes
 - builtin Postfix server with dkim signing and Cloudflare DDNS (scalable)
 - builin memcached server
