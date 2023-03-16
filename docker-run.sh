@@ -48,6 +48,7 @@ if [[ ! -f /var/www/dolidock/html/conf/conf.php ]]; then
     echo "[INIT] => update Dolibarr Config ..."
     cat > /var/www/dolidock/html/conf/conf.php << EOF
 <?php
+\$dolibarr_main_prod="1";
 \$dolibarr_main_url_root='${DOLI_URL_ROOT}';
 \$dolibarr_main_document_root='/var/www/dolidock/html';
 \$dolibarr_main_url_root_alt='/custom';
