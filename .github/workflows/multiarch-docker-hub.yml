@@ -7,7 +7,7 @@
 # Pour obtenir une version plus récente, vous devez mettre à jour le SHA.
 # Vous pouvez également référencer une balise ou une branche, mais l’action peut changer sans avertissement.
 
-name: Publish i386/arm64 to docker Hub
+name: Publish arm64 to docker Hub
 
 on:
   workflow_dispatch:
@@ -55,7 +55,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          platforms: linux/arm64,linux/386
+          platforms: linux/arm64
           push: true
           tags: ${{ secrets.DOCKER_IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
