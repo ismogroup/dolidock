@@ -20,11 +20,11 @@ RUN apt-get update -y \
         postgresql-client \
         cron \
     &&  case ${TARGETARCH} in \
-            "amd64")  curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb > /tmp/mysql-apt-config_0.8.22-1_all.deb && \
+            amd64)  curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb > /tmp/mysql-apt-config_0.8.22-1_all.deb && \
                         DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.22-1_all.deb && \
                         apt-get update -y &&\
                         apt-get install -y --no-install-recommends mysql-client ;; \
-            "arm64")  apt-get update -y &&\
+            *)  apt-get update -y &&\
                         apt-get install -y --no-install-recommends default-mysql-client   ;; \
         esac \
     && apt-get autoremove -y \
