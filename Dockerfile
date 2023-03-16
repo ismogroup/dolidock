@@ -1,6 +1,16 @@
 FROM ${ARCH}php:8.1-apache AS builder
 ARG TARGETARCH
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
+RUN echo "Run for $TARGETARCH" && \
+    if [[ "$TARGETARCH" == "amd64" ]] ; then \
+        curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb > /tmp/mysql-apt-config_0.8.22-1_all.deb && \
+        DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.22-1_all.deb && \
+        apt-get update -y &&\
+        apt-get install -y --no-install-recommends mysql-client lsb-release wget gnupg ; \
+    else \
+        apt-get update -y &&\
+        apt-get install -y --no-install-recommends default-mysql-client ; \
+    fi
 
 RUN apt-get update -y \
     && apt-get dist-upgrade -y \
@@ -16,19 +26,11 @@ RUN apt-get update -y \
         libxml2-dev \
         libzip-dev \
         libbz2-dev \
-        lsb-release wget vim gnupg \
+        libmemcached-dev \
         postgresql-client \
-        cron \
-    &&  case ${TARGETARCH} in \
-            amd64)  curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb > /tmp/mysql-apt-config_0.8.22-1_all.deb && \
-                        DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.22-1_all.deb && \
-                        apt-get update -y &&\
-                        apt-get install -y --no-install-recommends mysql-client ;; \
-            *)  apt-get update -y &&\
-                        apt-get install -y --no-install-recommends default-mysql-client   ;; \
-        esac \
-    && apt-get autoremove -y \
-    && docker-php-ext-install opcache \
+        cron
+
+RUN docker-php-ext-install opcache \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) calendar intl mysqli pdo_mysql gd soap zip \
     && docker-php-ext-configure pgsql -with-pgsql \
@@ -39,8 +41,7 @@ RUN apt-get update -y \
     && docker-php-ext-install imap \
     && docker-php-ext-configure bz2 \
     && docker-php-ext-install bz2
-RUN apt-get install -y --no-install-recommends libmemcached-dev && \
-    mkdir -p /usr/src/php/ext/memcached && \
+RUN mkdir -p /usr/src/php/ext/memcached && \
     git clone https://github.com/php-memcached-dev/php-memcached /usr/src/php/ext/memcached && \
     docker-php-ext-configure /usr/src/php/ext/memcached --disable-memcached-sasl \
     && docker-php-ext-install /usr/src/php/ext/memcached \
