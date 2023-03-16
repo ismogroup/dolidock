@@ -89,15 +89,19 @@ ENV WWW_GROUP_ID 33
 ENV PHP_INI_DATE_TIMEZONE 'UTC'
 ENV PHP_INI_MEMORY_LIMIT 256M
 
-RUN apt-get update -y \
-    && apt-get dist-upgrade -y \
-    && apt-get install -y --no-install-recommends \
-        curl libzip4 libc-client2007e postgresql-client libpng16-16 \
-        libjpeg62-turbo libfreetype6 lsb-release wget vim gnupg libmemcached11 &&\
-    curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb > /tmp/mysql-apt-config_0.8.22-1_all.deb && \
-    DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.22-1_all.deb && \
-    apt-get update -y &&\
-    apt-get install -y --no-install-recommends mysql-client
+RUN echo "Run for $TARGETARCH" && \
+    if [[ "$TARGETARCH" == "amd64" ]] ; then \
+        apt-get update -y \
+        && apt-get dist-upgrade -y \
+        && apt-get install -y --no-install-recommends && \
+        curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb > /tmp/mysql-apt-config_0.8.22-1_all.deb && \
+        DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.22-1_all.deb && \
+        apt-get update -y &&\
+        apt-get install -y --no-install-recommends mysql-client lsb-release wget gnupg ; \
+    else \
+        apt-get update -y &&\
+        apt-get install -y --no-install-recommends default-mysql-client ; \
+    fi
 COPY docker-run.sh /usr/local/bin/
 RUN mkdir -p /var/www/dolidock/html/custom && \
     curl -fLSs https://github.com/Dolibarr/dolibarr/archive/${DOLI_VERSION}.tar.gz |\
