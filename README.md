@@ -131,6 +131,7 @@ With that the SMTPd container will check automatically your public ip adress, pu
 
 ## Dolirate
 If needed a [Dolirate](https://github.com/ismogroup/dolirate) container is deployed. 
+Dolirate is a simple Express server, making a GET request to http://dolirate/updaterates will automatically fetch the currency exchange rates needed and update Dolibarr.  
 
 ## Crontab-UI
 A custom [Crontab-ui](https://github.com/highcanfly-club/crontab-ui) is deployed.  
