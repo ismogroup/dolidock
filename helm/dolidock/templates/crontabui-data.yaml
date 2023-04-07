@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "dolidock.fullname" . }}-crontabui-data
+  labels:
+    io.kompose.service: crontabui-data
+  {{- include "dolidock.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pvc.crontabuiData.storageRequest | quote }}
+  volumeMode: Filesystem

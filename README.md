@@ -40,8 +40,8 @@ And replace all newline by |
 You finally need to define some environment variables:  
 ```sh
 #!/bin/bash
-OKTETO_NS="oktetons"
-OKTETO_FQDN_DOLISTOCK="erp-oketons.cloud.okteto.net"
+NAMESPACE="oktetons"
+FQDN_DOLISTOCK="erp-oketons.cloud.okteto.net"
 DOLI_ADMIN_LOGIN="administrator"
 DOLI_ADMIN_PASSWORD="strongpassword"
 DOLI_DB_USER="adbuser"
@@ -68,8 +68,8 @@ For developping I'm using Okteto free tier.
 If you have an Okteto account, retrieve the kube config (settings Kubernetes credentials), and if you have all the required environment variables 
 |Variable|Sample value|Description| 
 |----|----|----|
-|OKTETO_NS|oktetons|Kubernetes namespace|
-|OKTETO_FQDN_DOLISTOCK|erp-oketons.cloud.okteto.net|FQDN of the main url|
+|NAMESPACE|oktetons|Kubernetes namespace|
+|FQDN_DOLISTOCK|erp-oketons.cloud.okteto.net|FQDN of the main url|
 |DOLI_ADMIN_LOGIN|administrator|Dolibarr SuperAdmin|
 |DOLI_ADMIN_PASSWORD|strongpassword|SuperAdmin password|
 |DOLI_DB_USER|adbuser|Owner of Dolibarr database|
@@ -96,9 +96,9 @@ It will deploy a cluster with a web frontend, a [Postfix server with DKIM signin
 Ingress hosts are:  
 | URL | Use |  
 | ---------------------------------------- | ---------- |  
-| https://admin-OKTETO_NS.cloud.okteto.net | phpMyAdmin |  
-| https://OKTETO_FQDN_DOLISTOCK | Dolibarr |  
-| https://crontabui-$OKTETO_NS.cloud.okteto.net | CrontabUI |  
+| https://admin-NAMESPACE.cloud.okteto.net | phpMyAdmin |  
+| https://FQDN_DOLISTOCK | Dolibarr |  
+| https://crontabui-$NAMESPACE.cloud.okteto.net | CrontabUI |  
 Note that php sessions are stored in the dolidock-data PVC so sessions are shared across replicas for scalability. It is tested without any problem up to 4 replicas.  
 
 ## Deploy on other Kubernetes cluster

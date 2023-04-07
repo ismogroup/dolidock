@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dolidock.fullname" . }}-crontabui
+  labels:
+    io.kompose.service: crontabui
+  {{- include "dolidock.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.crontabui.type }}
+  selector:
+    io.kompose.service: crontabui
+  {{- include "dolidock.selectorLabels" . | nindent 4 }}
+  ports:
+	{{- .Values.crontabui.ports | toYaml | nindent 2 -}}

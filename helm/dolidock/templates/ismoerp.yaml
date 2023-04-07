@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "dolidock.fullname" . }}-ismoerp
+  labels:
+  {{- include "dolidock.labels" . | nindent 4 }}
+spec:
+  rules:
+  - host: dolidock.example.org
+    http:
+      paths:
+      - backend:
+          service:
+            name: '{{ include "dolidock.fullname" . }}-dolidock'
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  - host: admin-dolidock.cloud.okteto.net
+    http:
+      paths:
+      - backend:
+          service:
+            name: '{{ include "dolidock.fullname" . }}-phpmyadmin'
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  - host: crontabui-dolidock.cloud.okteto.net
+    http:
+      paths:
+      - backend:
+          service:
+            name: '{{ include "dolidock.fullname" . }}-crontabui'
+            port:
+              number: 8000
+        path: /
+        pathType: Prefix

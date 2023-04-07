@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "dolidock.fullname" . }}-dolidock-data
+  labels:
+    io.kompose.service: dolidock-data
+  {{- include "dolidock.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pvc.dolidockData.storageRequest | quote }}
+  volumeMode: Filesystem

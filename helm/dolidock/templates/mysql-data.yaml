@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "dolidock.fullname" . }}-mysql-data
+  labels:
+    io.kompose.service: mysql-data
+  {{- include "dolidock.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pvc.mysqlData.storageRequest | quote }}
+  volumeMode: Filesystem
