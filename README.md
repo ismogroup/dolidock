@@ -152,3 +152,31 @@ you can log in with root and MYSQL_ROOT_PASSWORD
 I don't know why but the Users and Groups active is not automatically active. Just enable it.  
 Some warnings may appear in the frontend.  
 DOLI_DB_USER may not have RELOAD privilege on database, open a shell to the mysql container and grant it the privilege if needed.
+
+# Helm Chart
+```sh
+helm repo add highcanfly https://helm-repo.highcanfly.club/
+helm repo update
+helm install --create-namespace --namespace=dolidock dolidock highcanfly/dolidock \
+        --set dolistock.allowedSenderDomains=example.org \
+        --set dolistock.apiLayerKey=218de2509076367cd065b24dafca3e87 \
+        --set dolistock.cloudflareApiKey=dclshfzlsfhzlfjzljfpfjpzjfzpjf \
+        --set dolistock.cloudflareDnsRecords=dolistock.example.org \
+        --set dolistock.cloudflareZoneId=32ab1f68a9720e26e0a013c823a2e322 \
+        --set dolistock.dkimPrivateKey="-----BEGIN PRIVATE KEY-----|MIIEvIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII|IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII|IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII||-----END PRIVATE KEY-----" \
+        --set dolistock.dkimSelector=dolistock \
+        --set dolistock.doliAdminLogin=administrator \
+        --set dolistock.doliAdminPassword=password \
+        --set dolistock.doliDbName=dolibar \
+        --set dolistock.doliDbPassword=pass \
+        --set dolistock.doliDbUser=dolidbuser \
+        --set dolistock.mysqlDatabase=dolidb \
+        --set dolistock.mysqlPassword=pass \
+        --set dolistock.mysqlRootPassword=pass \
+        --set dolistock.mysqlUser=dbuser \
+        --set dolistock.postfixHostname=dolistock-smtp.example.org \
+        --set dolistock.pOSTFIXHeloName=dolistock-smtp.example.org \
+        --set dolistock.pOSTFIXMyhostname=dolistock-smtp.example.org \
+        --set dolistock.crontabuiUser=admin \
+        --set dolistock.crontabuiPassword=pass
+```
