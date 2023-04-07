@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "dolidock.fullname" . }}-phpmyadmin
+  name: phpmyadmin
   labels:
     io.kompose.service: phpmyadmin
   {{- include "dolidock.labels" . | nindent 4 }}

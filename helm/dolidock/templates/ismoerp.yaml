@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "dolidock.fullname" . }}-ismoerp
+  name: ismoerp
   labels:
   {{- include "dolidock.labels" . | nindent 4 }}
 spec:
@@ -11,7 +11,7 @@ spec:
       paths:
       - backend:
           service:
-            name: '{{ include "dolidock.fullname" . }}-dolidock'
+            name: 'dolidock'
             port:
               number: 80
         path: /
@@ -21,7 +21,7 @@ spec:
       paths:
       - backend:
           service:
-            name: '{{ include "dolidock.fullname" . }}-phpmyadmin'
+            name: 'phpmyadmin'
             port:
               number: 80
         path: /
@@ -31,7 +31,7 @@ spec:
       paths:
       - backend:
           service:
-            name: '{{ include "dolidock.fullname" . }}-crontabui'
+            name: 'crontabui'
             port:
               number: 8000
         path: /

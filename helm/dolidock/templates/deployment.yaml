@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "dolidock.fullname" . }}-smtpd
+  name: smtpd
   labels:
     io.kompose.service: smtpd
   {{- include "dolidock.labels" . | nindent 4 }}
@@ -30,47 +30,47 @@ spec:
           valueFrom:
             secretKeyRef:
               key: ALLOWED_SENDER_DOMAINS
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: DKIM_PRIVATE_KEY
           valueFrom:
             secretKeyRef:
               key: DKIM_PRIVATE_KEY
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: DKIM_SELECTOR
           valueFrom:
             secretKeyRef:
               key: DKIM_SELECTOR
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: CLOUDFLARE_ZONE_ID
           valueFrom:
             secretKeyRef:
               key: CLOUDFLARE_ZONE_ID
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: CLOUDFLARE_API_KEY
           valueFrom:
             secretKeyRef:
               key: CLOUDFLARE_API_KEY
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: CLOUDFLARE_DNS_RECORDS
           valueFrom:
             secretKeyRef:
               key: CLOUDFLARE_DNS_RECORDS
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: POSTFIX_HOSTNAME
           valueFrom:
             secretKeyRef:
               key: POSTFIX_HOSTNAME
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: POSTFIX_myhostname
           valueFrom:
             secretKeyRef:
               key: POSTFIX_myhostname
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: POSTFIX_helo_name
           valueFrom:
             secretKeyRef:
               key: POSTFIX_helo_name
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
         image: {{ .Values.smtpd.smtpd.image.repository }}:{{ .Values.smtpd.smtpd.image.tag
@@ -87,12 +87,12 @@ spec:
       volumes:
       - name: dolidock-data
         persistentVolumeClaim:
-          claimName: {{ include "dolidock.fullname" . }}-dolidock-data
+          claimName: dolidock-data
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "dolidock.fullname" . }}-mysql
+  name: mysql
   labels:
     io.kompose.service: mysql
   {{- include "dolidock.labels" . | nindent 4 }}
@@ -115,22 +115,22 @@ spec:
           valueFrom:
             secretKeyRef:
               key: MYSQL_ROOT_PASSWORD
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: MYSQL_DATABASE
           valueFrom:
             secretKeyRef:
               key: MYSQL_DATABASE
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: MYSQL_USER
           valueFrom:
             secretKeyRef:
               key: MYSQL_USER
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:
               key: MYSQL_PASSWORD
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
         image: {{ .Values.mysql.mysql.image.repository }}:{{ .Values.mysql.mysql.image.tag
@@ -150,12 +150,12 @@ spec:
       volumes:
       - name: mysql-data
         persistentVolumeClaim:
-          claimName: {{ include "dolidock.fullname" . }}-mysql-data
+          claimName: mysql-data
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "dolidock.fullname" . }}-dolidock
+  name: dolidock
   labels:
     io.kompose.service: dolidock
   {{- include "dolidock.labels" . | nindent 4 }}
@@ -178,32 +178,32 @@ spec:
           valueFrom:
             secretKeyRef:
               key: DOLI_ADMIN_LOGIN
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: DOLI_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
               key: DOLI_ADMIN_PASSWORD
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: DOLI_DB_NAME
           valueFrom:
             secretKeyRef:
               key: DOLI_DB_NAME
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: DOLI_DB_USER
           valueFrom:
             secretKeyRef:
               key: DOLI_DB_USER
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: DOLI_DB_PASSWORD
           valueFrom:
             secretKeyRef:
               key: DOLI_DB_PASSWORD
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
               key: MYSQL_ROOT_PASSWORD
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: DOLI_DB_TYPE
           value: {{ .Values.dolidock.dolidock.doliDbType }}
         - name: DOLI_DB_HOST
@@ -235,12 +235,12 @@ spec:
       volumes:
       - name: dolidock-data
         persistentVolumeClaim:
-          claimName: {{ include "dolidock.fullname" . }}-dolidock-data
+          claimName: dolidock-data
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "dolidock.fullname" . }}-phpmyadmin
+  name: phpmyadmin
   labels:
     io.kompose.service: phpmyadmin
   {{- include "dolidock.labels" . | nindent 4 }}
@@ -275,7 +275,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "dolidock.fullname" . }}-crontabui
+  name: crontabui
   labels:
     io.kompose.service: crontabui
   {{- include "dolidock.labels" . | nindent 4 }}
@@ -298,12 +298,12 @@ spec:
           valueFrom:
             secretKeyRef:
               key: crontabui-user
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: BASIC_AUTH_PWD
           valueFrom:
             secretKeyRef:
               key: crontabui-password
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
         image: {{ .Values.crontabui.crontabui.image.repository }}:{{ .Values.crontabui.crontabui.image.tag
@@ -323,12 +323,12 @@ spec:
       volumes:
       - name: crontabui-data
         persistentVolumeClaim:
-          claimName: {{ include "dolidock.fullname" . }}-crontabui-data
+          claimName: crontabui-data
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "dolidock.fullname" . }}-dolirate
+  name: dolirate
   labels:
     io.kompose.service: dolirate
   {{- include "dolidock.labels" . | nindent 4 }}
@@ -355,24 +355,24 @@ spec:
           valueFrom:
             secretKeyRef:
               key: DOLI_DB_USER
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: DOLI_DB_PASSWORD
           valueFrom:
             secretKeyRef:
               key: DOLI_DB_PASSWORD
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: DOLI_DB_PREFIX
           value: {{ .Values.dolirate.dolirate.doliDbPrefix }}
         - name: DOLI_DB_NAME
           valueFrom:
             secretKeyRef:
               key: DOLI_DB_NAME
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: API_LAYER_KEY
           valueFrom:
             secretKeyRef:
               key: API_LAYER_KEY
-              name: {{ include "dolidock.fullname" . }}-dolistock
+              name: dolistock
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
         image: {{ .Values.dolirate.dolirate.image.repository }}:{{ .Values.dolirate.dolirate.image.tag
@@ -390,7 +390,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "dolidock.fullname" . }}-memcached
+  name: memcached
   labels:
     io.kompose.service: memcached
   {{- include "dolidock.labels" . | nindent 4 }}

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "dolidock.fullname" . }}-crontabui-data
+  name: crontabui-data
   labels:
     io.kompose.service: crontabui-data
   {{- include "dolidock.labels" . | nindent 4 }}

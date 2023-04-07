@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ include "dolidock.fullname" . }}-dolistock
+  name: dolistock
   labels:
   {{- include "dolidock.labels" . | nindent 4 }}
 stringData:
