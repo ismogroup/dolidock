@@ -76,6 +76,7 @@ dolistock:
   pOSTFIXHeloName: ""
   pOSTFIXMyhostname: ""
   postfixHostname: ""
+  hostname: ""
 imagePullSecrets: []
 kubernetesClusterDomain: cluster.local
 memcached:

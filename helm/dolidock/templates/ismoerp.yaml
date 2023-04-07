@@ -6,7 +6,7 @@ metadata:
   {{- include "dolidock.labels" . | nindent 4 }}
 spec:
   rules:
-  - host: dolidock.example.org
+  - host: {{ required "dolistock.postfixHostname is required" .Values.dolistock.postfixHostname }}
     http:
       paths:
       - backend:
@@ -16,7 +16,7 @@ spec:
               number: 80
         path: /
         pathType: Prefix
-  - host: admin-dolidock.cloud.okteto.net
+  - host: admin-{{ required "dolistock.postfixHostname is required" .Values.dolistock.postfixHostname }}
     http:
       paths:
       - backend:
@@ -26,7 +26,7 @@ spec:
               number: 80
         path: /
         pathType: Prefix
-  - host: crontabui-dolidock.cloud.okteto.net
+  - host: crontabui-{{ required "dolistock.postfixHostname is required" .Values.dolistock.postfixHostname }}
     http:
       paths:
       - backend:
