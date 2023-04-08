@@ -29,19 +29,19 @@ stringData:
     | quote }}
   DOLI_DB_USER: {{ required "dolistock.doliDbUser is required" .Values.dolistock.doliDbUser
     | quote }}
-  MYSQL_DATABASE: {{ required "dolistock.mysqlDatabase is required" .Values.dolistock.mysqlDatabase
+  MYSQL_DATABASE: {{ required "dolistock.doliDbName is required" .Values.dolistock.doliDbName
     | quote }}
-  MYSQL_PASSWORD: {{ required "dolistock.mysqlPassword is required" .Values.dolistock.mysqlPassword
+  MYSQL_PASSWORD: {{ required "dolistock.doliDbPassword is required" .Values.dolistock.doliDbPassword
     | quote }}
   MYSQL_ROOT_PASSWORD: {{ required "dolistock.mysqlRootPassword is required" .Values.dolistock.mysqlRootPassword
     | quote }}
-  MYSQL_USER: {{ required "dolistock.mysqlUser is required" .Values.dolistock.mysqlUser
+  MYSQL_USER: {{ required "dolistock.doliDbUser is required" .Values.dolistock.doliDbUser
     | quote }}
   POSTFIX_HOSTNAME: {{ required "dolistock.postfixHostname is required" .Values.dolistock.postfixHostname
     | quote }}
-  POSTFIX_helo_name: {{ required "dolistock.pOSTFIXHeloName is required" .Values.dolistock.pOSTFIXHeloName
+  POSTFIX_helo_name: {{ required "dolistock.postfixHostname is required" .Values.dolistock.postfixHostname
     | quote }}
-  POSTFIX_myhostname: {{ required "dolistock.pOSTFIXMyhostname is required" .Values.dolistock.pOSTFIXMyhostname
+  POSTFIX_myhostname: {{ required "dolistock.postfixHostname is required" .Values.dolistock.postfixHostname
     | quote }}
   crontabui-password: {{ required "dolistock.crontabuiPassword is required" .Values.dolistock.crontabuiPassword
     | quote }}

@@ -169,14 +169,10 @@ helm install --create-namespace --namespace=dolidock dolidock highcanfly/dolidoc
         --set dolistock.doliAdminPassword=password \
         --set dolistock.doliDbName=dolibar \
         --set dolistock.doliDbPassword=pass \
-        --set dolistock.doliDbUser=dolidbuser \
-        --set dolistock.mysqlDatabase=dolidb \
-        --set dolistock.mysqlPassword=pass \
+        --set dolistock.hostname=dolidock.example.org \
         --set dolistock.mysqlRootPassword=pass \
-        --set dolistock.mysqlUser=dbuser \
-        --set dolistock.postfixHostname=dolistock-smtp.example.org \
-        --set dolistock.pOSTFIXHeloName=dolistock-smtp.example.org \
-        --set dolistock.pOSTFIXMyhostname=dolistock-smtp.example.org \
+        --set dolistock.postfixHostname=dolidock-smtp.example.org \
         --set dolistock.crontabuiUser=admin \
         --set dolistock.crontabuiPassword=pass
 ```
+Okteto can reuse the same PVC, use --set smtpd.useDolidockPVC=true

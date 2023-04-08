@@ -61,20 +61,15 @@ dolistock:
   cloudflareDnsRecords: ""
   cloudflareZoneId: ""
   crontabuiPassword: ""
-  crontabuiUser: ""
+  crontabuiUser: "administrator"
   dkimPrivateKey: ""
-  dkimSelector: ""
-  doliAdminLogin: ""
+  dkimSelector: "dkim-dolidock"
+  doliAdminLogin: "administrator"
   doliAdminPassword: ""
-  doliDbName: ""
+  doliDbName: "dolidock"
   doliDbPassword: ""
-  doliDbUser: ""
-  mysqlDatabase: ""
-  mysqlPassword: ""
+  doliDbUser: "dbuser"
   mysqlRootPassword: ""
-  mysqlUser: ""
-  pOSTFIXHeloName: ""
-  pOSTFIXMyhostname: ""
   postfixHostname: ""
   hostname: ""
 imagePullSecrets: []
@@ -133,7 +128,10 @@ pvc:
     storageRequest: 3Gi
   mysqlData:
     storageRequest: 1Gi
+  smtpdData:
+    storageRequest: 25Mi
 smtpd:
+  useDolidockPVC: false
   ports:
   - name: "25"
     port: 25

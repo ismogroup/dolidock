@@ -73,21 +73,20 @@ spec:
               name: dolistock
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
-        image: {{ .Values.smtpd.smtpd.image.repository }}:{{ .Values.smtpd.smtpd.image.tag
-          | default .Chart.AppVersion }}
+        image: {{ .Values.smtpd.smtpd.image.repository }}:{{ .Values.smtpd.smtpd.image.tag | default .Chart.AppVersion }}
         name: smtpd
         ports:
         - containerPort: 25
         resources: {{- toYaml .Values.smtpd.smtpd.resources | nindent 10 }}
         volumeMounts:
         - mountPath: /var/www/dolidock
-          name: dolidock-data
+          name: {{ if (default .Values.smtpd.useDolidockPVC) }}dolidock-data{{ else }}smtpd-data{{ end }}
       imagePullSecrets: {{ .Values.imagePullSecrets | default list | toJson }}
       restartPolicy: Always
       volumes:
-      - name: dolidock-data
+      - name: {{ if (default .Values.smtpd.useDolidockPVC) }}dolidock-data{{ else }}smtpd-data{{ end }}
         persistentVolumeClaim:
-          claimName: dolidock-data
+          claimName: {{ if (default .Values.smtpd.useDolidockPVC) }}dolidock-data{{ else }}smtpd-data{{ end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
