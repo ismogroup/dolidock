@@ -153,6 +153,28 @@ I don't know why but the Users and Groups active is not automatically active. Ju
 Some warnings may appear in the frontend.  
 DOLI_DB_USER may not have RELOAD privilege on database, open a shell to the mysql container and grant it the privilege if needed.
 
+## Update
+- From a terminal find a dolidock pod name `kubectl --kubeconfig kube.config get pods`
+```sh
+NAME                          READY   STATUS    RESTARTS   AGE
+crontabui-d5cb45588-jlbg7     1/1     Running   0          9d
+dolidock-6c4d67c96c-klbr2     1/1     Running   0          9d
+dolidock-6c4d67c96c-ljds7     1/1     Running   0          9d
+dolidock-6c4d67c96c-njnc7     1/1     Running   0          9d
+dolirate-757d6bff67-wc8mp     1/1     Running   0          9d
+memcached-5855c7d6bf-smd24    1/1     Running   0          9d
+mysql-794ff5f6fc-2mwzf        1/1     Running   0          9d
+phpmyadmin-5fd9b8bfcb-l4dkl   1/1     Running   0          9d
+smtpd-7fddb75dcb-s9j79        1/1     Running   0          9d
+```
+- connect to the pod terminal `kubectl --kubeconfig kube.config exec -it dolidock-6c4d67c96c-klbr2  -- /bin/bash`
+- remove install.lock `rm /var/www/dolidock/documents/install.lock`
+- restart the cluster and follow the ui
+- at the end if needed reconnect to a pod and create a new install.lock
+```sh
+echo "" > /var/www/dolidock/documents/install.lock
+```
+
 # Helm Chart
 ```sh
 helm repo add highcanfly https://helm-repo.highcanfly.club/
