@@ -137,7 +137,6 @@ RUN cd /var/www/dolidock/ &&\
     patch --fuzz=12 -p0 < pgsql-enable-ssl.diff &&\
     patch --fuzz=12 -p0 < bug-fk-soc-tier.diff &&\
     patch --fuzz=12 -p0 < bug-margin-pdf.diff &&\
-    patch --fuzz=12 -p0 < bug-saphir.diff &&\
     rm -f *.diff
 COPY --from=builder /custom/htdocs /var/www/dolidock/html/custom/
 EXPOSE 80
