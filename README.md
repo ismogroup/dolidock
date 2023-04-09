@@ -1,16 +1,33 @@
 [![Publish image to docker Hub](https://github.com/ismogroup/dolidock/actions/workflows/publish-docker-hub.yml/badge.svg)](https://hub.docker.com/r/ismogroup/dolidock)
-# Dolibarr on Docker
+- [1. Dolibarr on Docker](#1-dolibarr-on-docker)
+  - [1.1. What is Dolibarr ?](#11-what-is-dolibarr-)
+  - [1.2. What differs ?](#12-what-differs-)
+    - [1.2.1. Docker image](#121-docker-image)
+    - [1.2.2. Docker Compose stack / Kubernetes](#122-docker-compose-stack--kubernetes)
+  - [1.3. How to ?](#13-how-to-)
+  - [1.4. Deploy on Okteto](#14-deploy-on-okteto)
+  - [1.5. Deploy on other Kubernetes cluster](#15-deploy-on-other-kubernetes-cluster)
+  - [1.6. DKIM key and \_domainkey record](#16-dkim-key-and-_domainkey-record)
+  - [1.7. SMTPd server](#17-smtpd-server)
+  - [1.8. Dolirate](#18-dolirate)
+  - [1.9. Crontab-UI](#19-crontab-ui)
+  - [1.10. PhpMyAdmin](#110-phpmyadmin)
+  - [1.11. Known issues](#111-known-issues)
+  - [1.12. Update](#112-update)
+- [2. Helm Chart](#2-helm-chart)
+
+# 1. Dolibarr on Docker
 
 Docker image for Dolibarr 17.0.0 with auto installer on first boot.
 
-## What is Dolibarr ?
+## 1.1. What is Dolibarr ?
 
 Dolibarr ERP & CRM is a modern software package to manage your organization's activity (contacts, suppliers, invoices, orders, stocks, agenda, ...).
 
 > [More information](https://github.com/dolibarr/dolibarr)
 
-## What differs ?
-### Docker image
+## 1.2. What differs ?
+### 1.2.1. Docker image
 - Use latest MySql libraries from Oracle/MySql
 - Supports bzip2 compression for backup
 - Can be scaled up (php session are shared) / tested up to 4 replicas
@@ -18,14 +35,14 @@ Dolibarr ERP & CRM is a modern software package to manage your organization's ac
 - Contains all Dolicloud/DoliMods module
 - linux/amd64 and linux/arm64 platform (on arm db client is MariaDB, Mysql on amd64 )
 
-### Docker Compose stack / Kubernetes
+### 1.2.2. Docker Compose stack / Kubernetes
 - builtin Postfix server with dkim signing and Cloudflare DDNS (scalable)
 - builin memcached server
 - builtin phpMyAdmin server
 - builtin cron server with web ui and cloud commander
 
 
-## How to ?
+## 1.3. How to ?
 
 The simplest use is to use docker compose… 
 It is designed for Cloudflare, it automatically updates a Cloudflare DNS zone. You need to get your ZoneID and generate a token (api key) for editing your dns zone.  
@@ -62,7 +79,7 @@ DOLIDOCK_REPLICAS="3"
 ```
 
 
-## Deploy on Okteto
+## 1.4. Deploy on Okteto
 
 For developping I'm using Okteto free tier.  
 If you have an Okteto account, retrieve the kube config (settings Kubernetes credentials), and if you have all the required environment variables 
@@ -101,12 +118,12 @@ Ingress hosts are:
 | https://crontabui-$NAMESPACE.cloud.okteto.net | CrontabUI |  
 Note that php sessions are stored in the dolidock-data PVC so sessions are shared across replicas for scalability. It is tested without any problem up to 4 replicas.  
 
-## Deploy on other Kubernetes cluster
+## 1.5. Deploy on other Kubernetes cluster
 If you have a valid kube.config you probably just need to adapt the OKETO_NS variable to your namespace.  
 For example Azure Kubernetes needs "default".  
 Also you may need to replace the Ingress in the k8s.yml for adapting to the available Ingress service.  
 
-## DKIM key and _domainkey record
+## 1.6. DKIM key and _domainkey record
 for creating the DKIM private key simply generate it with openssl and store it as DKIM_PRIVATE_KEY
 ```sh
 openssl genrsa -out /dev/stdout 2048 | tr '\n' '|' | sed 's/.$//'
@@ -116,7 +133,7 @@ When you have a valid DKIM_PRIVATE_KEY environment variable you can compute your
 echo $DKIM_PRIVATE_KEY | tr '|' '\n' | openssl rsa -pubout 2> /dev/null | sed -e '1d' -e '$d' | tr -d '\n' | echo "v=DKIM1; h=sha256; k=rsa; s=email; p=$(</dev/stdin)"
 ```
 
-## SMTPd server
+## 1.7. SMTPd server
 In the Docker docker-compose.yml and the Kubernetes k8s.yml a Postfix server is deployed.  
 It contains a DKIM signer, a DDNS update script for Cloudflare DNS and a Letsencrypt autorenew certificate.  
 For having it runnig you need a [Cloudflare](https://dash.cloudflare.com/login) zone (the free account is sufficient).  
@@ -129,11 +146,11 @@ While you have a running Cloudflare zone,
 - In the Cloudflare DNS view, create a TXT record with name "DKIM_SELECTOR._domainkey" and the value you computed previously with your DKIM_PRIVATE_KEY variable
 With that the SMTPd container will check automatically your public ip adress, publish it at Cloudflare. So all outgoing emails will come for a valid MX host (the spf record) and will be signed with a valid dkim key. This is important for spam checking.   
 
-## Dolirate
+## 1.8. Dolirate
 If needed a [Dolirate](https://github.com/ismogroup/dolirate) container is deployed. 
 Dolirate is a simple Express server, making a GET request to http://dolirate/updaterates will automatically fetch the currency exchange rates needed and update Dolibarr.  
 
-## Crontab-UI
+## 1.9. Crontab-UI
 A custom [Crontab-ui](https://github.com/highcanfly-club/crontab-ui) is deployed.  
 On Okteto the url is https://crontabui-OKETO_NS.cloud.okteto.net  
 If needed you can add some cron task inside.  
@@ -142,18 +159,18 @@ For example for updating the needed exchange rates in Dolibarr:
 /usr/bin/curl http://dolirate:3000/updaterates
 ```
 
-## PhpMyAdmin
+## 1.10. PhpMyAdmin
 A phpMyAdmin official image is deployed.
 On Okteto the url is https://admin-OKETO_NS.cloud.okteto.net  
 you can log in with root and MYSQL_ROOT_PASSWORD
 
-## Known issues
+## 1.11. Known issues
 
 I don't know why but the Users and Groups active is not automatically active. Just enable it.  
 Some warnings may appear in the frontend.  
 DOLI_DB_USER may not have RELOAD privilege on database, open a shell to the mysql container and grant it the privilege if needed.
 
-## Update
+## 1.12. Update
 - From a terminal find a dolidock pod name `kubectl --kubeconfig kube.config get pods`
 ```sh
 NAME                          READY   STATUS    RESTARTS   AGE
@@ -175,7 +192,7 @@ smtpd-7fddb75dcb-s9j79        1/1     Running   0          9d
 echo "" > /var/www/dolidock/documents/install.lock
 ```
 
-# Helm Chart
+# 2. Helm Chart
 ```sh
 helm repo add highcanfly https://helm-repo.highcanfly.club/
 helm repo update
