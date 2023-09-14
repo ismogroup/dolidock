@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin
+  labels:
+    io.kompose.service: phpmyadmin
+  {{- include "dolidock.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.phpmyadmin.replicas }}
+  selector:
+    matchLabels:
+      io.kompose.service: phpmyadmin
+    {{- include "dolidock.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        io.kompose.network/dolidock-default: "true"
+        io.kompose.service: phpmyadmin
+      {{- include "dolidock.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: PMA_HOST
+          value: {{ .Values.phpmyadmin.pmaHost }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ .Values.kubernetesClusterDomain }}
+        image: {{ .Values.phpmyadmin.image.repository }}:{{ .Values.phpmyadmin.image.tag
+          | default .Chart.AppVersion }}
+        name: phpmyadmin
+        ports:
+        - containerPort: 80
+        resources: {{- toYaml .Values.phpmyadmin.resources | nindent 10 }}
+      imagePullSecrets: {{ .Values.imagePullSecrets | default list | toJson }}
+      restartPolicy: Always

@@ -1,12 +1,13 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ismoerp
+  name: dolidock-ingress
   labels:
   {{- include "dolidock.labels" . | nindent 4 }}
 spec:
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
   rules:
-  - host: {{ required "dolistock.postfixHostname is required" .Values.dolistock.postfixHostname }}
+  - host: {{ required "dolidock.hostname is required" .Values.dolidock.hostname }}
     http:
       paths:
       - backend:
@@ -16,7 +17,7 @@ spec:
               number: 80
         path: /
         pathType: Prefix
-  - host: admin-{{ required "dolistock.postfixHostname is required" .Values.dolistock.postfixHostname }}
+  - host: {{ required "dolidock.adminHostname is required" .Values.dolidock.adminHostname }}
     http:
       paths:
       - backend:
@@ -26,7 +27,7 @@ spec:
               number: 80
         path: /
         pathType: Prefix
-  - host: crontabui-{{ required "dolistock.postfixHostname is required" .Values.dolistock.postfixHostname }}
+  - host: {{ required "dolidock.crontabuiHostname is required" .Values.dolidock.crontabuiHostname }}
     http:
       paths:
       - backend:

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memcached
+  labels:
+    io.kompose.service: memcached
+  {{- include "dolidock.labels" . | nindent 4 }}
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.28.0 (c4137012e)
+spec:
+  replicas: {{ .Values.memcached.replicas }}
+  selector:
+    matchLabels:
+      io.kompose.service: memcached
+    {{- include "dolidock.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        io.kompose.network/dolidock-default: "true"
+        io.kompose.service: memcached
+      {{- include "dolidock.selectorLabels" . | nindent 8 }}
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.28.0 (c4137012e)
+    spec:
+      containers:
+      - args:
+        - memcached
+        - -m
+        - "1024"
+        env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ .Values.kubernetesClusterDomain }}
+        image: {{ .Values.memcached.image.repository }}:{{ .Values.memcached.image.tag
+          | default .Chart.AppVersion }}
+        name: memcached
+        ports:
+        - containerPort: 11211
+        resources: {{- toYaml .Values.memcached.resources | nindent 10 }}
+      imagePullSecrets: {{ .Values.imagePullSecrets | default list | toJson }}
+      restartPolicy: Always

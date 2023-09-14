@@ -1,12 +1,13 @@
 crontabui:
+  enabled: true
   crontabui:
-    image:
-      repository: highcanfly/crontab-ui
-      tag: latest
-    resources:
-      limits:
-        cpu: 250m
-        memory: "214748364"
+  image:
+    repository: highcanfly/crontab-ui
+    tag: latest
+  resources:
+    limits:
+      cpu: 250m
+      memory: "214748364"
   ports:
   - name: "8000"
     port: 8000
@@ -14,47 +15,10 @@ crontabui:
   replicas: 1
   type: ClusterIP
 dolidock:
-  dolidock:
-    env:
-      doliDbHost: mysql
-      doliDbHostPort: "3306"
-      doliDbType: mysqli
-      doliUrlRoot: https://dolidock.example.org
-      wwwGroupId: "1000"
-      wwwUserId: "1000"
-    image:
-      repository: ismogroup/dolidock
-      tag: latest
-    resources:
-      limits:
-        cpu: "1"
-        memory: 3Gi
-  ports:
-  - name: "80"
-    port: 80
-    targetPort: 80
-  replicas: 1
-  type: ClusterIP
-dolirate:
-  dolirate:
-    env:
-      doliDbPrefix: llx_
-      mysqlHost: mysql
-      mysqlPort: "3306"
-    image:
-      repository: ismogroup/dolirate
-      tag: latest
-    resources:
-      limits:
-        cpu: 250m
-        memory: 100M
-  ports:
-  - name: "3000"
-    port: 3000
-    targetPort: 3000
-  replicas: 1
-  type: ClusterIP
-dolistock:
+  doliDbHost: mysql
+  doliDbHostPort: "3306"
+  doliDbType: mysqli
+  doliUrlRoot: https://dolidock.example.org
   allowedSenderDomains: ""
   apiLayerKey: ""
   cloudflareApiKey: ""
@@ -72,17 +36,50 @@ dolistock:
   mysqlRootPassword: ""
   postfixHostname: ""
   hostname: ""
+  adminHostname: ""
+  crontabuiHostname: ""
+  wwwGroupId: "1000"
+  wwwUserId: "1000"
+  image:
+    repository: ismogroup/dolidock
+    tag: latest
+  resources:
+    limits:
+      cpu: "1"
+      memory: 3Gi
+  ports:
+  - name: "80"
+    port: 80
+    targetPort: 80
+  replicas: 1
+  type: ClusterIP
+dolirate:
+  doliDbPrefix: llx_
+  mysqlHost: mysql
+  mysqlPort: "3306"
+  image:
+    repository: ismogroup/dolirate
+    tag: latest
+  resources:
+    limits:
+      cpu: 250m
+      memory: 100M
+  ports:
+  - name: "3000"
+    port: 3000
+    targetPort: 3000
+  replicas: 1
+  type: ClusterIP
 imagePullSecrets: []
 kubernetesClusterDomain: cluster.local
 memcached:
-  memcached:
-    image:
-      repository: memcached
-      tag: alpine
-    resources:
-      limits:
-        cpu: 250m
-        memory: 1Gi
+  image:
+    repository: memcached
+    tag: alpine
+  resources:
+    limits:
+      cpu: 250m
+      memory: 1Gi
   ports:
   - name: "11211"
     port: 11211
@@ -90,14 +87,13 @@ memcached:
   replicas: 1
   type: ClusterIP
 mysql:
-  mysql:
-    image:
-      repository: mysql
-      tag: latest
-    resources:
-      limits:
-        cpu: "1"
-        memory: 2Gi
+  image:
+    repository: mysql
+    tag: latest
+  resources:
+    limits:
+      cpu: "1"
+      memory: 2Gi
   ports:
   - name: "3306"
     port: 3306
@@ -105,16 +101,14 @@ mysql:
   replicas: 1
   type: ClusterIP
 phpmyadmin:
-  phpmyadmin:
-    env:
-      pmaHost: mysql
-    image:
-      repository: phpmyadmin
-      tag: latest
-    resources:
-      limits:
-        cpu: 250m
-        memory: 512M
+  pmaHost: mysql
+  image:
+    repository: phpmyadmin
+    tag: latest
+  resources:
+    limits:
+      cpu: 250m
+      memory: 512M
   ports:
   - name: "80"
     port: 80
@@ -137,12 +131,13 @@ smtpd:
     port: 25
     targetPort: 25
   replicas: 1
-  smtpd:
-    image:
-      repository: ismogroup/docker-smtp-relay
-      tag: latest
-    resources:
-      limits:
-        cpu: 900m
-        memory: "322122547"
+  image:
+    repository: ismogroup/docker-smtp-relay
+    tag: latest
+  resources:
+    limits:
+      cpu: 900m
+      memory: "322122547"
   type: ClusterIP
+ingress:
+  ingressClassName: nginx
