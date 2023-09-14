@@ -71,6 +71,10 @@ spec:
             secretKeyRef:
               key: POSTFIX_helo_name
               name: dolidock
+        {{ if .Values.smtpd.relayHost }}
+        - name: RELAYHOST
+          value: {{ .Values.smtpd.relayHost | quote }}
+        {{ end }}
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
         image: {{ .Values.smtpd.image.repository }}:{{ .Values.smtpd.image.tag | default .Chart.AppVersion }}

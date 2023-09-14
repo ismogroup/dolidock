@@ -126,13 +126,14 @@ pvc:
     storageRequest: 25Mi
 smtpd:
   useDolidockPVC: false
+  relayHost: ""
   ports:
   - name: "25"
     port: 25
     targetPort: 25
   replicas: 1
   image:
-    repository: ismogroup/docker-smtp-relay
+    repository: highcanfly/smtp-relay
     tag: latest
   resources:
     limits:

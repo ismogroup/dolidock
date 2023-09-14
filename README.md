@@ -197,21 +197,34 @@ echo "" > /var/www/dolidock/documents/install.lock
 helm repo add highcanfly https://helm-repo.highcanfly.club/
 helm repo update
 helm install --create-namespace --namespace=dolidock dolidock highcanfly/dolidock \
-        --set dolistock.allowedSenderDomains=example.org \
-        --set dolistock.apiLayerKey=218de2509076367cd065b24dafca3e87 \
-        --set dolistock.cloudflareApiKey=dclshfzlsfhzlfjzljfpfjpzjfzpjf \
-        --set dolistock.cloudflareDnsRecords=dolistock.example.org \
-        --set dolistock.cloudflareZoneId=32ab1f68a9720e26e0a013c823a2e322 \
-        --set dolistock.dkimPrivateKey="-----BEGIN PRIVATE KEY-----|MIIEvIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII|IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII|IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII||-----END PRIVATE KEY-----" \
-        --set dolistock.dkimSelector=dolistock \
-        --set dolistock.doliAdminLogin=administrator \
-        --set dolistock.doliAdminPassword=password \
-        --set dolistock.doliDbName=dolibar \
-        --set dolistock.doliDbPassword=pass \
-        --set dolistock.hostname=dolidock.example.org \
-        --set dolistock.mysqlRootPassword=pass \
-        --set dolistock.postfixHostname=dolidock-smtp.example.org \
-        --set dolistock.crontabuiUser=admin \
-        --set dolistock.crontabuiPassword=pass
+        --values _values.yaml
 ```
+```yaml
+dolidock:
+  allowedSenderDomains: "example.org"
+  apiLayerKey: pc4d67c96cc4d67c96cTGH5qwbY
+  # cloudflareApiKey: ViCgLwjv4soP55Mn
+  # cloudflareDnsRecords: smtp.example.org
+  # cloudflareZoneId: "E+OstPbqGs26JhgdhJVF"
+  doliAdminPassword: "c4d67c96c"
+  doliDbPassword: "c4d67c96c"
+  mysqlRootPassword: "c4d67c96c"
+  postfixHostname: smtp-example
+  hostname: erp.example.org
+  adminHostname: admin-erp.example.org
+  crontabuiHostname: crontabui-derp.example.org
+  dkimSelector: dkim
+  dkimPrivateKey: "----BEGIN PRIVATE KEY-----|MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEA|rxSPI0KqL9mH2JyWFexZziV3RuE7DIf+IFVPLsrxSrfsZqYOFuBamfPVLVHNx+Ma|dbDPH+KzOc5sMNDkLebWg+qddpTm6Zy0mUACRbFijF1TjPRiwnpEpScGUSS+Cs8U|Coe+cQBuoTsIHpowYjVbps4=|-----END PRIVATE KEY-----"
+crontabui:
+  enabled: false
+smtpd:
+  useCloudflareDDNS: "0"
+  useLetsEncrypt: "0"
+  relayHost: "[smtp.gmail.com]:587"
+ingress:
+  ingressClassName: nginx
+  tls:
+    enabled: true
+    certIssuer: cert-issuer
+``````
 Okteto can reuse the same PVC, use --set smtpd.useDolidockPVC=true
