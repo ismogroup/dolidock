@@ -1,6 +1,5 @@
 crontabui:
   enabled: true
-  crontabui:
   image:
     repository: highcanfly/crontab-ui
     tag: latest
@@ -144,3 +143,5 @@ smtpd:
   type: ClusterIP
 ingress:
   ingressClassName: nginx
+  tls:
+    certIssuer: ""

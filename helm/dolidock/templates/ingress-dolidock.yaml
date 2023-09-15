@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dolidock-ingress
+  labels:
+  {{- include "dolidock.labels" . | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
+  rules:
+  - host: {{ required "dolidock.hostname is required" .Values.dolidock.hostname }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: 'dolidock'
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  {{ if .Values.ingress.tls.certIssuer }}
+  tls:
+  - hosts:
+    - {{ .Values.dolidock.hostname }}
+    secretName: dolidock-ingress-cert
+  {{ end }}

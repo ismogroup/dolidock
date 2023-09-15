@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: phpmyadmin-ingress
+  labels:
+  {{- include "dolidock.labels" . | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
+  rules:
+  - host: {{ required "dolidock.adminHostname is required" .Values.dolidock.adminHostname }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: 'phpmyadmin'
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  {{ if .Values.ingress.tls.certIssuer }}
+  tls:
+  - hosts:
+    - {{ .Values.dolidock.adminHostname }}
+    secretName: phpmyadmin-ingress-cert
+  {{ end }}
