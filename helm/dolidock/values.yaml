@@ -37,6 +37,8 @@ dolidock:
   hostname: ""
   adminHostname: ""
   crontabuiHostname: ""
+  backupFrom: ""
+  backupTo: ""
   wwwGroupId: "1000"
   wwwUserId: "1000"
   image:
