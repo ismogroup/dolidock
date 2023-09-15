@@ -124,6 +124,7 @@ pvc:
   smtpdData:
     storageRequest: 25Mi
 smtpd:
+  updateStrategy: RollingUpdate # Recreate | RollingUpdate
   useDolidockPVC: false
   useCloudflareDDNS: "0"
   useLetsEncrypt: "0"
