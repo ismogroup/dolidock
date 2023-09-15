@@ -23,7 +23,7 @@ spec:
         - name: MYSQL_HOST
           value: {{ .Values.dolirate.mysqlHost }}
         - name: MYSQL_PORT
-          value: {{ .Values.dolirate.mysqlPort }}
+          value: {{ .Values.dolirate.mysqlPort | quote }}
         - name: DOLI_DB_USER
           valueFrom:
             secretKeyRef:

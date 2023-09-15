@@ -55,13 +55,13 @@ spec:
         - name: DOLI_DB_HOST
           value: {{ .Values.dolidock.doliDbHost }}
         - name: DOLI_DB_HOST_PORT
-          value: {{ .Values.dolidock.doliDbHostPort }}
+          value: {{ .Values.dolidock.doliDbHostPort | quote }}
         - name: DOLI_URL_ROOT
           value: {{ .Values.dolidock.doliUrlRoot }}
         - name: WWW_USER_ID
-          value: {{ .Values.dolidock.wwwUserId }}
+          value: {{ .Values.dolidock.wwwUserId | quote }}
         - name: WWW_GROUP_ID
-          value: {{ .Values.dolidock.wwwGroupId }}
+          value: {{ .Values.dolidock.wwwGroupId | quote }}
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
         image: {{ .Values.dolidock.image.repository }}:{{ .Values.dolidock.image.tag
