@@ -126,6 +126,8 @@ pvc:
     storageRequest: 25Mi
 smtpd:
   useDolidockPVC: false
+  useCloudflareDDNS: "0"
+  useLetsEncrypt: "0"
   relayHost: ""
   ports:
   - name: "25"

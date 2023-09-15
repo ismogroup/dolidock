@@ -28,24 +28,24 @@ spec:
           valueFrom:
             secretKeyRef:
               key: DOLI_DB_USER
-              name: dolistock
+              name: dolidock
         - name: DOLI_DB_PASSWORD
           valueFrom:
             secretKeyRef:
               key: DOLI_DB_PASSWORD
-              name: dolistock
+              name: dolidock
         - name: DOLI_DB_PREFIX
           value: {{ .Values.dolirate.doliDbPrefix }}
         - name: DOLI_DB_NAME
           valueFrom:
             secretKeyRef:
               key: DOLI_DB_NAME
-              name: dolistock
+              name: dolidock
         - name: API_LAYER_KEY
           valueFrom:
             secretKeyRef:
               key: API_LAYER_KEY
-              name: dolistock
+              name: dolidock
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
         image: {{ .Values.dolirate.image.repository }}:{{ .Values.dolirate.image.tag

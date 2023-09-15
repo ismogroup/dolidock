@@ -41,6 +41,7 @@ spec:
             secretKeyRef:
               key: DKIM_SELECTOR
               name: dolidock
+        {{ if eq .Values.dolidock.useCloudflareDDNS '1' }}
         - name: CLOUDFLARE_ZONE_ID
           valueFrom:
             secretKeyRef:
@@ -56,6 +57,11 @@ spec:
             secretKeyRef:
               key: CLOUDFLARE_DNS_RECORDS
               name: dolidock
+        {{ end }}
+        - name: USE_CLOUDFLARE_DDNS
+          value: {{ .Values.dolidock.useCloudflareDDNS | quote }}
+        - name: USE_LETSENCRYPT
+          value: {{ .Values.dolidock.useLetsEncrypt | quote }}
         - name: POSTFIX_HOSTNAME
           valueFrom:
             secretKeyRef:
