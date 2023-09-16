@@ -1,3 +1,12 @@
+FROM ${ARCH}php:8.1-apache AS busyboxbuilder
+RUN cd / \
+    && apt-get update -y \
+    && apt-get install -y build-essential curl libntirpc-dev  \
+    && curl -L https://busybox.net/downloads/busybox-1.36.1.tar.bz2 | tar -xjv \
+    && cd /busybox-1.36.1/
+COPY busybox.config /busybox-1.36.1/.config
+RUN cd /busybox-1.36.1/ && make install
+
 FROM ${ARCH}php:8.1-apache AS builder
 ARG TARGETARCH
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
@@ -28,7 +37,7 @@ RUN apt-get update -y \
         libbz2-dev \
         libmemcached-dev \
         postgresql-client \
-        cron
+        cron 
 
 RUN docker-php-ext-install opcache \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -59,6 +68,7 @@ FROM ${ARCH}php:8.1-apache
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
+COPY --from=busyboxbuilder /busybox-1.36.1/_install/bin/busybox /bin/busybox
 ENV DOLI_VERSION 18.0.1
 ENV DOLI_INSTALL_AUTO 1
 
@@ -114,7 +124,8 @@ RUN mkdir -p /var/www/dolidock/html/custom && \
     cp -r /tmp/dolibarr-${DOLI_VERSION}/htdocs/* /var/www/dolidock/html/ && \
     cp -r /tmp/dolibarr-${DOLI_VERSION}/scripts /var/www/ && \
     rm -rf /tmp/* && \
-    chown -R www-data:www-data /var/www
+    chown -R www-data:www-data /var/www && \
+    ln -svf /bin/busybox /usr/sbin/sendmail
 RUN a2dissite 000-default &&\
     echo "<VirtualHost *:80>" >> /etc/apache2/sites-available/dolibarr.conf &&\
     echo "ServerAdmin webmaster@localhost" >> /etc/apache2/sites-available/dolibarr.conf &&\

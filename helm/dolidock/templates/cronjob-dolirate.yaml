@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: update-dolirate
+spec:
+  schedule: "@daily"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: update-dolirate
+            env:
+            - name: MYSQL_HOST
+              value: {{ .Values.dolidock.doliDbHost }}
+            - name: MYSQL_PORT
+              value: {{ .Values.dolidock.doliDbHostPort | quote }}
+            - name: DOLI_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: DOLI_DB_USER
+                  name: dolidock
+            - name: DOLI_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: DOLI_DB_PASSWORD
+                  name: dolidock
+            - name: DOLI_DB_PREFIX
+              value: {{ .Values.dolidock.doliDbPrefix }}
+            - name: DOLI_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  key: DOLI_DB_NAME
+                  name: dolidock
+            - name: API_LAYER_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: API_LAYER_KEY
+                  name: dolidock
+            image: busybox:latest
+            imagePullPolicy: Always #IfNotPresent
+            command:
+            - /bin/wget
+            - --output-document=-
+            - http://dolirate:3000/updaterates
+          restartPolicy: OnFailure
