@@ -6,6 +6,8 @@ metadata:
     io.kompose.service: dolidock
   {{- include "dolidock.labels" . | nindent 4 }}
 spec:
+  strategy:
+    type: {{ .Values.dolidock.updateStrategy }}
   replicas: {{ .Values.dolidock.replicas }}
   selector:
     matchLabels:
