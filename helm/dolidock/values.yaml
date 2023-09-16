@@ -32,6 +32,7 @@ dolidock:
   doliDbName: "dolidock"
   doliDbPassword: ""
   doliDbUser: "dbuser"
+  doliDbPrefix: llx_
   mysqlRootPassword: ""
   postfixHostname: ""
   hostname: ""
@@ -55,7 +56,6 @@ dolidock:
   replicas: 1
   type: ClusterIP
 dolirate:
-  doliDbPrefix: llx_
   mysqlHost: mysql
   mysqlPort: "3306"
   image:
