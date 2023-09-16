@@ -42,5 +42,5 @@ jobs:
           context: .
           platforms: linux/arm64, linux/amd64
           push: true
-          tags: ${{ secrets.DOCKER_IMAGE_NAME }}:latest
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
