@@ -1,0 +1,38 @@
+{{ if and .Values.dolidock.backupFrom .Values.dolidock.backupTo }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: autobackup
+spec:
+  schedule: "@weekly"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: autobackup
+            env:
+            - name: MYSQL_HOST
+              value: "mysql"
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_ROOT_PASSWORD
+                  name: dolidock
+            - name: BACKUP_FROM
+              value: {{ .Values.dolidock.backupFrom | quote }}
+            - name: BACKUP_TO
+              value: {{ .Values.dolidock.backupTo | quote }}
+            - name: MYSQL_BASE
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_DATABASE
+                  name: dolidock
+            - name: SMTP_HOST
+              value: "smtpd:25"
+            image: highcanfly/dolidock-autobackup
+            imagePullPolicy: Always #IfNotPresent
+            command:
+            - /usr/local/bin/autobackup
+          restartPolicy: OnFailure
+{{ end }}
