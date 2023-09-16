@@ -250,8 +250,7 @@ fi
 if [[ -n ${BACKUP_FROM}]]; then
     echo "PATH=\$PATH:/usr/local/bin" > /etc/cron.d/autobackup
     echo "0 0 * * 0 root /usr/local/bin/autobackup" >> /etc/cron.d/autobackup
-    cron -f
-    exit 0
+    cron -f &
 fi
 
 if [ "${1#-}" != "$1" ]; then
