@@ -118,6 +118,7 @@ RUN apt-get update -y \
         curl libzip4 libc-client2007e postgresql-client libpng16-16 \
         libjpeg62-turbo libfreetype6 vim libmemcached11
 COPY docker-run.sh /usr/local/bin/
+COPY autobackup /usr/local/bin/
 RUN mkdir -p /var/www/dolidock/html/custom && \
     curl -fLSs https://github.com/Dolibarr/dolibarr/archive/${DOLI_VERSION}.tar.gz |\
     tar -C /tmp -xz && \
@@ -125,6 +126,8 @@ RUN mkdir -p /var/www/dolidock/html/custom && \
     cp -r /tmp/dolibarr-${DOLI_VERSION}/scripts /var/www/ && \
     rm -rf /tmp/* && \
     chown -R www-data:www-data /var/www && \
+    chmod ugo+x /usr/local/bin/docker-run.sh && \
+    chmod ugo+x /usr/local/bin/autobackup && \
     ln -svf /bin/busybox /usr/sbin/sendmail
 RUN a2dissite 000-default &&\
     echo "<VirtualHost *:80>" >> /etc/apache2/sites-available/dolibarr.conf &&\

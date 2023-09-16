@@ -247,6 +247,13 @@ if [[ ${DOLI_CRON} -eq 1 ]]; then
     exit 0
 fi
 
+if [[ -n ${BACKUP_FROM}]]; then
+    echo "PATH=\$PATH:/usr/local/bin" > /etc/cron.d/autobackup
+    echo "0 0 * * 0 root /usr/local/bin/autobackup" >> /etc/cron.d/autobackup
+    cron -f
+    exit 0
+fi
+
 if [ "${1#-}" != "$1" ]; then
   set -- apache2-foreground "$@"
 fi

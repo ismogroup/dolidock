@@ -1,0 +1,32 @@
+#!/bin/bash
+NOW=`date -I`
+/usr/bin/mysqldump -h $DOLI_DB_HOST -P $DOLI_DB_HOST_PORT -U root --password="$MYSQL_ROOT_PASSWORD" $DOLI_DB_NAME | bzip2 -9 > /tmp/backup.sql.bz2
+tar -cvjf /tmp/backup.tar.bz2 /tmp/backup.sql.bz2 /var/www/dolidock/documents
+(
+cat << EOF 
+From: "SAUVEGARDE @Dolidock" <$BACKUP_FROM>
+To: "Backup@Dolidock" <$BACKUP_TO>
+MIME-Version: 1.0
+Subject: Sauvegarde Dolidock $FQDN du $NOW 
+Content-Type: multipart/mixed; boundary="-"
+
+This is a MIME encoded message.  Decode it with "munpack"
+or any other MIME reading software.  Mpack/munpack is available
+via anonymous FTP in ftp.andrew.cmu.edu:pub/mpack/
+---
+Content-Type: text/plain
+
+Voici la sauvegarde du $NOW
+accès https://$FQDN/
+Dolidock+ team
+
+---
+Content-Type: application/octet-stream; name="backup-$NOW.tar.bz2"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline; filename="backup-$NOW.tar.bz2"
+
+EOF
+)    | (cat - && /usr/bin/openssl base64 < /tmp/backup.tar.bz2 && echo "" && echo "---")\
+     | /usr/sbin/sendmail -f $BACKUP_FROM -S $SMTP_HOST -t --
+rm -rf /tmp/backup.tar.bz2
+rm -rf /tmp/backup.sql.bz2

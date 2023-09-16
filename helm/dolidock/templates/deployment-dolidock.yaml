@@ -64,6 +64,15 @@ spec:
           value: {{ .Values.dolidock.wwwGroupId | quote }}
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
+        - name: SMTP_HOST
+          value: "smtpd:25"
+        - name: FQDN
+          value: {{ .Values.dolidock.hostname}}
+        - name: BACKUP_FROM
+          value: {{ .Values.dolidock.backupFrom }}
+        - name: BACKUP_TO
+          value: {{ .Values.dolidock.backupTo }}
+        imagePullPolicy: {{ .Values.dolidock.imagePullPolicy }}
         image: {{ .Values.dolidock.image.repository }}:{{ .Values.dolidock.image.tag
           | default .Chart.AppVersion }}
         name: dolidock
