@@ -1,4 +1,4 @@
-{{ if and .Values.dolidock.backupFrom .Values.dolidock.backupTo }}
+{{ if and .Values.dolidock.backupFrom .Values.dolidock.backupTo .Values.dolidock.autobackupJob }}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
