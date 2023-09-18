@@ -16,6 +16,7 @@ crontabui:
 dolidock:
   imagePullPolicy: IfNotPresent 
   updateStrategy: RollingUpdate # Recreate | RollingUpdate
+  autobackupJob: false
   doliDbHost: mysql
   doliDbHostPort: "3306"
   doliDbType: mysqli
