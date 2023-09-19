@@ -115,7 +115,7 @@ RUN echo "Run for $TARGETARCH" && \
 RUN apt-get update -y \
     && apt-get dist-upgrade -y \
     && apt-get install -y --no-install-recommends \
-        curl libzip4 libc-client2007e postgresql-client libpng16-16 \
+        curl cron libzip4 libc-client2007e postgresql-client libpng16-16 \
         libjpeg62-turbo libfreetype6 vim libmemcached11
 COPY docker-run.sh /usr/local/bin/
 COPY autobackup /usr/local/bin/
