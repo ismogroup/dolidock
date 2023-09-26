@@ -18,7 +18,7 @@
 
 # 1. Dolibarr on Docker
 
-Docker image for Dolibarr 17.0.0 with auto installer on first boot.
+Docker image for Dolibarr 18.0.1 with auto installer on first boot.
 
 ## 1.1. What is Dolibarr ?
 
@@ -201,6 +201,8 @@ helm install --create-namespace --namespace=dolidock dolidock highcanfly/dolidoc
 ```
 ```yaml
 dolidock:
+  image: 
+    tag: 18.0.1.8
   allowedSenderDomains: "example.org"
   apiLayerKey: pc4d67c96cc4d67c96cTGH5qwbY
   # cloudflareApiKey: ViCgLwjv4soP55Mn

@@ -1,6 +1,6 @@
 #!/bin/bash
 NOW=`date -I`
-/usr/bin/mysqldump -h $DOLI_DB_HOST -P $DOLI_DB_HOST_PORT -U root --password="$MYSQL_ROOT_PASSWORD" $DOLI_DB_NAME | bzip2 -9 > /tmp/backup.sql.bz2
+/usr/bin/mysqldump -h $DOLI_DB_HOST -P $DOLI_DB_HOST_PORT -u root --password="$MYSQL_ROOT_PASSWORD" $DOLI_DB_NAME | bzip2 -9 > /tmp/backup.sql.bz2
 tar -cvjf /tmp/backup.tar.bz2 /tmp/backup.sql.bz2 /var/www/dolidock/documents
 (
 cat << EOF 
