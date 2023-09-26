@@ -1,7 +1,7 @@
 #!/bin/bash
 VERSION=$((php) << EOF
 <?php
-include "html/filefunc.inc.php";
+include "/var/www/dolidock/html/filefunc.inc.php";
 echo DOL_VERSION;
 ?>
 EOF)
