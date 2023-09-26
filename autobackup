@@ -1,7 +1,15 @@
 #!/bin/bash
+VERSION=$((php) << EOF
+<?php
+include "html/filefunc.inc.php";
+echo DOL_VERSION;
+?>
+EOF)
 NOW=`date -I`
-/usr/bin/mysqldump -h $DOLI_DB_HOST -P $DOLI_DB_HOST_PORT -u root --password="$MYSQL_ROOT_PASSWORD" $DOLI_DB_NAME | bzip2 -9 > /tmp/backup.sql.bz2
-tar -cvjf /tmp/backup.tar.bz2 /tmp/backup.sql.bz2 /var/www/dolidock/documents
+FILENAME="mysqldump_${DOLI_DB_NAME}_${VERSION}_${NOW}.sql"
+/usr/bin/mysqldump -h $DOLI_DB_HOST -P $DOLI_DB_HOST_PORT -u root --password="$MYSQL_ROOT_PASSWORD" $DOLI_DB_NAME > /var/www/dolidock/documents/admin/backup/${FILENAME}
+tar -cvjf /tmp/backup.tar.bz2 /var/www/dolidock/documents
+rm -rf /var/www/dolidock/documents/admin/backup/${FILENAME}
 (
 cat << EOF 
 From: "SAUVEGARDE @Dolidock" <$BACKUP_FROM>
@@ -29,4 +37,3 @@ EOF
 )    | (cat - && /usr/bin/openssl base64 < /tmp/backup.tar.bz2 && echo "" && echo "---")\
      | /usr/sbin/sendmail -f $BACKUP_FROM -S $SMTP_HOST -t --
 rm -rf /tmp/backup.tar.bz2
-rm -rf /tmp/backup.sql.bz2
