@@ -4,6 +4,13 @@ metadata:
   name: phpmyadmin-ingress
   labels:
   {{- include "dolidock.labels" . | nindent 4 }}
+  annotations:
+    {{ if .Values.ingress.tls.certIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.certIssuer }}
+    {{ end }}
+    {{ if .Values.ingress.annotations -}}
+    {{ .Values.ingress.annotations | toYaml | nindent 4}}
+    {{ end }}
 spec:
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   rules:
