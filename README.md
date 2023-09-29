@@ -213,6 +213,7 @@ dolidock:
   mysqlRootPassword: "c4d67c96c"
   postfixHostname: smtp-example
   hostname: erp.example.org
+  doliUrlRoot: https://erp.example.org
   adminHostname: admin-erp.example.org
   crontabuiHostname: crontabui-derp.example.org
   dkimSelector: dkim
