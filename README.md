@@ -191,7 +191,7 @@ smtpd-7fddb75dcb-s9j79        1/1     Running   0          9d
 ```sh
 echo "" > /var/www/dolidock/documents/install.lock
 ```
-
+A simple `/upgrade-helper.sh` can help
 # 2. Helm Chart
 ```sh
 helm repo add highcanfly https://helm-repo.highcanfly.club/

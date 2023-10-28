@@ -69,7 +69,7 @@ LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
 COPY --from=busyboxbuilder /busybox-1.36.1/_install/bin/busybox /bin/busybox
-ENV DOLI_VERSION 18.0.1
+ENV DOLI_VERSION 18.0.2
 ENV DOLI_INSTALL_AUTO 1
 
 ENV DOLI_DB_TYPE mysqli
@@ -119,6 +119,7 @@ RUN apt-get update -y \
         libjpeg62-turbo libfreetype6 vim libmemcached11
 COPY docker-run.sh /usr/local/bin/
 COPY autobackup /usr/local/bin/
+COPY --chmod=0755 upgrade-helper.sh /upgrade-helper.sh
 RUN mkdir -p /var/www/dolidock/html/custom && \
     curl -fLSs https://github.com/Dolibarr/dolibarr/archive/${DOLI_VERSION}.tar.gz |\
     tar -C /tmp -xz && \
