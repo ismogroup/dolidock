@@ -69,7 +69,7 @@ LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
 COPY --from=busyboxbuilder /busybox-1.36.1/_install/bin/busybox /bin/busybox
-ENV DOLI_VERSION 18.0.2
+ENV DOLI_VERSION 18.0.3
 ENV DOLI_INSTALL_AUTO 1
 
 ENV DOLI_DB_TYPE mysqli
@@ -107,10 +107,10 @@ RUN echo "Run for $TARGETARCH" && \
         curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb > /tmp/mysql-apt-config_0.8.22-1_all.deb && \
         DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.22-1_all.deb && \
         apt-get update -y &&\
-        apt-get install -y --no-install-recommends mysql-client lsb-release wget gnupg ; \
+        apt-get install -y --no-install-recommends mysql-client lsb-release wget gnupg xz-utils ; \
     else \
         apt-get update -y &&\
-        apt-get install -y --no-install-recommends default-mysql-client ; \
+        apt-get install -y --no-install-recommends default-mysql-client xz-utils ; \
     fi
 RUN apt-get update -y \
     && apt-get dist-upgrade -y \

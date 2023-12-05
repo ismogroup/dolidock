@@ -8,7 +8,7 @@ EOF)
 NOW=`date -I`
 FILENAME="mysqldump_${DOLI_DB_NAME}_${VERSION}_${NOW}.sql"
 /usr/bin/mysqldump -h $DOLI_DB_HOST -P $DOLI_DB_HOST_PORT -u root --password="$MYSQL_ROOT_PASSWORD" $DOLI_DB_NAME > /var/www/dolidock/documents/admin/backup/${FILENAME}
-tar -cvjf /tmp/backup.tar.bz2 /var/www/dolidock/documents
+tar -cvJf /tmp/backup.tar.xz /var/www/dolidock/documents
 rm -rf /var/www/dolidock/documents/admin/backup/${FILENAME}
 (
 cat << EOF 
@@ -29,11 +29,11 @@ accès https://$FQDN/
 Dolidock+ team
 
 ---
-Content-Type: application/octet-stream; name="backup-$NOW.tar.bz2"
+Content-Type: application/octet-stream; name="backup-$NOW.tar.xz"
 Content-Transfer-Encoding: base64
-Content-Disposition: inline; filename="backup-$NOW.tar.bz2"
+Content-Disposition: inline; filename="backup-$NOW.tar.xz"
 
 EOF
-)    | (cat - && /usr/bin/openssl base64 < /tmp/backup.tar.bz2 && echo "" && echo "---")\
+)    | (cat - && /usr/bin/openssl base64 < /tmp/backup.tar.xz && echo "" && echo "---")\
      | /usr/sbin/sendmail -f $BACKUP_FROM -S $SMTP_HOST -t --
-rm -rf /tmp/backup.tar.bz2
+rm -rf /tmp/backup.tar.xz
