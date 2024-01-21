@@ -43,7 +43,7 @@ spec:
             secretKeyRef:
               key: DKIM_SELECTOR
               name: dolidock
-        {{ if eq .Values.dolidock.useCloudflareDDNS '1' }}
+        {{ if and .Values.smtpd.useCloudflareDDNS (eq .Values.smtpd.useCloudflareDDNS "1")}}
         - name: CLOUDFLARE_ZONE_ID
           valueFrom:
             secretKeyRef:
@@ -61,9 +61,9 @@ spec:
               name: dolidock
         {{ end }}
         - name: USE_CLOUDFLARE_DDNS
-          value: {{ .Values.dolidock.useCloudflareDDNS | quote }}
+          value: {{ .Values.smtpd.useCloudflareDDNS | quote }}
         - name: USE_LETSENCRYPT
-          value: {{ .Values.dolidock.useLetsEncrypt | quote }}
+          value: {{ .Values.smtpd.useLetsEncrypt | quote }}
         - name: POSTFIX_HOSTNAME
           valueFrom:
             secretKeyRef:
@@ -82,6 +82,17 @@ spec:
         {{ if .Values.smtpd.relayHost }}
         - name: RELAYHOST
           value: {{ .Values.smtpd.relayHost | quote }}
+        {{ end }}
+        {{ if .Values.smtpd.relayHostUser }}
+        - name: RELAYHOST_USERNAME
+          value: {{ .Values.smtpd.relayHostUser | quote }}
+        {{ end }}
+        {{ if .Values.smtpd.relayHostPassword }}
+        - name: RELAYHOST_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: relayHostPassword
+              name: dolidock
         {{ end }}
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
