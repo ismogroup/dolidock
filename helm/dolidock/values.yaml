@@ -146,6 +146,9 @@ smtpd:
     limits:
       cpu: 900m
       memory: "322122547"
+    requests:
+      cpu: 50m
+      memory: "50Mi"
   type: ClusterIP
 ingress:
   ingressClassName: nginx
