@@ -94,6 +94,10 @@ spec:
               key: relayHostPassword
               name: dolidock
         {{ end }}
+        {{ if and .Values.smtpd.useLetsEncryptStaging (eq .Values.smtpd.useLetsEncryptStaging "1") }}
+        - name: USE_LETSENCRYPT_STAGING
+          value: {{ .Values.smtpd.useLetsEncryptStaging | quote }}
+        {{ end }}
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
         image: {{ .Values.smtpd.image.repository }}:{{ .Values.smtpd.image.tag | default .Chart.AppVersion }}
