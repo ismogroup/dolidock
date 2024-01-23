@@ -3,4 +3,4 @@ dependencies:
   repository: https://helm-repo.highcanfly.club
   version: 0.1.5
 digest: sha256:b33926e3f87cd40ddcc32a49b35caf26cff2fe4cae606989fe18d88e7abb06e5
-generated: "2024-01-23T19:48:14.014967117+01:00"
+generated: "2024-01-23T20:23:36.202306267+01:00"
