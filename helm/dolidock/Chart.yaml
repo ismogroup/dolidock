@@ -22,5 +22,5 @@ appVersion: "18.0.4"
 
 dependencies:
 - name: flex-smtpd
-  version: 0.1.2
+  version: 0.1.3
   repository: https://helm-repo.highcanfly.club
