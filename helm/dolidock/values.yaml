@@ -128,7 +128,9 @@ pvc:
     storageRequest: 1Gi
   smtpdData:
     storageRequest: 25Mi
-smtpd:
+flex-smtpd:
+  service:
+    name: smtpd
   updateStrategy: RollingUpdate # Recreate | RollingUpdate
   useDolidockPVC: false
   useCloudflareDDNS: "0"
@@ -145,7 +147,7 @@ smtpd:
   resources:
     limits:
       cpu: 900m
-      memory: "322122547"
+      memory: "512Mi"
     requests:
       cpu: 50m
       memory: "50Mi"
