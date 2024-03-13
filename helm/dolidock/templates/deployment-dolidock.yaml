@@ -69,25 +69,27 @@ spec:
         - name: SMTP_HOST
           value: "smtpd:25"
         - name: FQDN
-          value: {{ .Values.dolidock.hostname}}
+          value: {{ .Values.dolidock.hostname | quote }}
         - name: BACKUP_FROM
-          value: {{ .Values.dolidock.backupFrom }}
+          value: {{ .Values.dolidock.backupFrom | quote }}
         - name: BACKUP_TO
-          value: {{ .Values.dolidock.backupTo }}
+          value: {{ .Values.dolidock.backupTo | quote }}
         - name: S3_BUCKET
-          value: {{ .Values.dolidock.s3Bucket }}
+          value: {{ .Values.dolidock.s3Bucket | quote }}
         - name: S3_ENDPOINT
-          value: {{ .Values.dolidock.s3Endpoint }}
+          value: {{ .Values.dolidock.s3Endpoint | quote }}
         - name: S3_ACCESS_KEY
-          value: {{ .Values.dolidock.s3AccessKey }}
+          value: {{ .Values.dolidock.s3AccessKey | quote }}
         - name: S3_SECRET_KEY
-          value: {{ .Values.dolidock.s3SecretKey }}
+          value: {{ .Values.dolidock.s3SecretKey | quote }}
         - name: S3_REGION
-          value: {{ .Values.dolidock.s3Region }}
+          value: {{ .Values.dolidock.s3Region | quote}}
+        - name: S3_PATH
+          value: {{ .Values.dolidock.s3Path | quote}}
         - name: CRYPTOKEN
-          value: {{ .Values.dolidock.s3Cryptoken }}
+          value: {{ .Values.dolidock.s3Cryptoken  | quote}}
         - name: DOLI_INIT_FROM_S3
-          value: {{ .Values.dolidock.doliInitFromS3 }}
+          value: {{ .Values.dolidock.doliInitFromS3 | quote }}
         imagePullPolicy: {{ .Values.dolidock.imagePullPolicy }}
         image: {{ .Values.dolidock.image.repository }}:{{ .Values.dolidock.image.tag | default .Chart.AppVersion }}
         name: dolidock

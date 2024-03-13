@@ -16,6 +16,14 @@ crontabui:
   replicas: 1
   type: ClusterIP
 dolidock:
+  s3Bucket: "master"
+  s3Path: "random-s3-path"
+  s3Endpoint: "https://random-s3-endpoint.com"
+  s3AccessKey: "random-access-key"
+  s3SecretKey: "random-secret-key"
+  s3Region: "random-region"
+  s3Cryptoken: "random-cryptoken"
+  doliInitFromS3: "false"
   imagePullPolicy: IfNotPresent 
   updateStrategy: RollingUpdate # Recreate | RollingUpdate
   autobackupJob: false
@@ -169,8 +177,8 @@ cloudflared:
   image:
       repository: highcanfly/net-tools
       tag: 1.2.5
-  TunnelID: 3a7b5c9d-1e2f-4a6b-b9d8-c0e7f6a5b4c3
-  credentials: {"AccountTag":"1b3a9c8d7e6f5g4h3i2j1k0l","TunnelSecret":"m4n5o6p7q8r9s0t1u2v3w4x5y6z7A8B9C","TunnelID":"3a7b5c9d-1e2f-4a6b-b9d8-c0e7f6a5b4c3"}
+  TunnelID: 3a7b5c9d-1e2f-4a6b-b9a8-c0e7f6a5b4c3
+  credentials: {"AccountTag":"1b3a9c8d7e2f5g4h3i2j1k0l","TunnelSecret":"o4n5o6p7q8r9s0t1u2v3w4x5y6z7A8B9C","TunnelID":"3a7b5c9d-1e2f-4a6b-b9a8-c0e7f6a5b4c3"}
   # command: ["/bin/sh"]
   # args: ["-c", "cd ~/ && touch file.txt && mknod -m 777 fifo p && cat fifo | netcat -k -l 8000 > fifo && sleep infinity"]
   config: |
@@ -190,7 +198,7 @@ cloudflared:
     cert: |
       -----BEGIN PRIVATE KEY-----
       MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgw7NV3o6KFY6H4Nck
-      wmTv5VGVOvMuwffVBOnqbiaTto2hRANCAAT0f28q1+2pRiq6zDZpyLOmQ4LlcmTQ
+      wmTv5VGVOvMuwffVBOnqbiaAao2hRANCAAT0f28q1+2pRiq6zDZpyLOmQ4LlcmTQ
       y9ck9HXc5+KpscYaWTtz3ask7Ng+jLWlyg9ch7Z613uVdsUG0ygcRUko
       -----END PRIVATE KEY-----
       -----BEGIN CERTIFICATE-----
@@ -203,7 +211,7 @@ cloudflared:
       JAYDVQQDEx1DbG91ZEZsYXJlIE9yaWdpbiBDZXJ0aWZpY2F0ZTBZMBMGByqGSM49
       AgEGCCqGSM49AwEHA0IABPR/byrX7alGKrrMNmnIs6ZDguVyZNDL1yT0ddzn4qmx
       xhpZO3PdqyTs2D6MtaXKD1yHtnrXe5V2xQbTKBxFSSijggE0MIIBMDAOBgNVHQ8B
-      Af8EBAMCBaAwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMAwGA1UdEwEB
+      Af8EBAMCBaAwHQYDVR24BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMAwGA1UdEwEB
       /wQCMAAwHQYDVR0OBBYEFMEBSh/gFX0N4MEMG9ICFL203FUXMB8GA1UdIwQYMBaA
       FIUwXTsqcNTt1ZJnB/3rObQaDjinMEQGCCsGAQUFBwEBBDgwNjA0BggrBgEFBQcw
       AYYoaHR0cDovL29jc3AuY2xvdWRmbGFyZS5jb20vb3JpZ2luX2VjY19jYTAtBgNV
@@ -214,7 +222,7 @@ cloudflared:
       -----END CERTIFICATE-----
       -----BEGIN ARGO TUNNEL TOKEN-----
       eyJ6b25lSUQiOiI1ZGVkZjcxMGQ2MzBkNzQ2MzAzZjRlYTM0NGJmYTVlMyIsImFj
-      Y291bnRJRCI6IjJlNGFlOThkOGIyNTMyNWI0Mzg0NzRhZTUzZjBkMWM0Iiwic2Vy
+      Y291bnRJRCI6IjJlNGFlOThkOGI7fTMyNWI0Mzg0NzRhZTUzZjBkMWM0Iiwic2Vy
       dmljZUtleSI6ImJhZjQyYzIwLWY4ZjItNDYwZS1hZjE2LWQ1YzQwYjQyYjI1ZCIs
       ImFwaVRva2VuIjoiOTlPbE90R2lELVc4WVFWamE2Y21XVFU4aGkxM1FiY19vMDN0
       V3cyclMiJ9
