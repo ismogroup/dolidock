@@ -1,5 +1,23 @@
 #!/bin/bash
 
+########################
+# Check if the provided argument is a boolean or is the string 'yes/true'
+# Arguments:
+#   $1 - Value to check
+# Returns:
+#   Boolean
+#########################
+function is_boolean_yes() {
+    local -r bool="${1:-}"
+    # comparison is performed without regard to the case of alphabetic characters
+    shopt -s nocasematch
+    if [[ "$bool" = 1 || "$bool" =~ ^(yes|true)$ ]]; then
+        true
+    else
+        false
+    fi
+}
+
 # usage: get_env_value VAR [DEFAULT]
 #    ie: get_env_value 'XYZ_DB_PASSWORD' 'example'
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
@@ -205,7 +223,13 @@ function run() {
     mysql -u ${DOLI_DB_USER} -p${DOLI_DB_PASSWORD} -h ${DOLI_DB_HOST} -P ${DOLI_DB_HOST_PORT} ${DOLI_DB_NAME} -e "SELECT Q.LAST_INSTALLED_VERSION FROM (SELECT INET_ATON(CONCAT(value, REPEAT('.0', 3 - CHAR_LENGTH(value) + CHAR_LENGTH(REPLACE(value, '.', ''))))) as VERSION_ATON, value as LAST_INSTALLED_VERSION FROM llx_const WHERE name IN ('MAIN_VERSION_LAST_INSTALL', 'MAIN_VERSION_LAST_UPGRADE') and entity=0) Q ORDER BY VERSION_ATON DESC LIMIT 1" >/tmp/lastinstall.result 2>&1
     r=$?
     if [[ ${r} -ne 0 ]]; then
-      initializeDatabase
+      if ! is_boolean_yes "${DOLI_INSTALL_AUTO}"; then
+        echo "Initializing database from scratch ..."
+        initializeDatabase
+      else
+        /usr/local/bin/initfrom-s3
+      fi
+      
     else
       INSTALLED_VERSION=$(grep -v LAST_INSTALLED_VERSION /tmp/lastinstall.result)
       echo "Last installed Version is : ${INSTALLED_VERSION}"

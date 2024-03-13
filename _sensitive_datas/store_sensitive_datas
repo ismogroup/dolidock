@@ -1,8 +1,29 @@
 #!/bin/bash
 #1-store
-cd $PROJECT_ROOT
-tar -cvJf _sensitive_datas/_sensitive_datas.tar.xz .vscode/settings.json .vscode/okteto-kube.config .vscode/env
+if [ -z "${CRYPTOKEN}" ]; then
+    echo "CRYPTOKEN is empty: command linepass will be used to encrypt the sensitive datas"
+    #ask for the password
+    echo -n "Enter the password: "
+    read -s CRYPTOKEN
+    
+fi
+
+PWD=`pwd`
+tar -cvJf _sensitive_datas/_sensitive_datas.tar.xz .vscode/settings.json .vscode/okteto-kube.config .vscode/env scripts/export-lab.sh
 #2-encrypt
-openssl aes-256-cbc -base64 -md sha256 -in _sensitive_datas/_sensitive_datas.tar.xz -out _sensitive_datas/_sensitive_datas.tar.xz.enc
+openssl aes-256-cbc -base64 -md sha256 -pass pass:"$CRYPTOKEN" -in _sensitive_datas/_sensitive_datas.tar.xz -out _sensitive_datas/_sensitive_datas.tar.xz.enc
 #3-delete 
-rm _sensitive_datas/_sensitive_datas.tar.xz
+rm -f _sensitive_datas/_sensitive_datas.tar.xz
+cd $PWD
+echo "CRYPTED with 'openssl aes-256-cbc -base64 -md sha256 -pass pass:\"$CRYPTOKEN\"'"
+
+# Check if the sensitive datas _sensitive_datas/_sensitive_datas.tar.xz.enc was not encrypted with an empty password
+# try to decrypt with the empty password
+openssl aes-256-cbc -a -d -md sha256 -pass pass:"" -in _sensitive_datas/_sensitive_datas.tar.xz.enc -out - | tar -tvJ > /dev/null 2> /dev/null
+if [ $? -eq 0 ]; then
+    echo ""
+    echo "WARNING"
+    echo "The sensitive datas _sensitive_datas/_sensitive_datas.tar.xz.enc was encrypted with an empty password"
+    rm $HOME/_sensitive_datas/_sensitive_datas.tar.xz.enc
+    exit -1
+fi

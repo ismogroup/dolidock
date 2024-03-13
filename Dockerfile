@@ -154,6 +154,8 @@ RUN cd /var/www/dolidock/ &&\
     patch --fuzz=12 -p0 < bug-margin-pdf.diff &&\
     rm -f *.diff
 COPY --from=builder /custom/htdocs /var/www/dolidock/html/custom/
+RUN curl -L https://dl.min.io/client/mc/release/linux-$(dpkg --print-architecture)/mc > /usr/local/bin/mc && chmod +x /usr/local/bin/mc
+COPY --chmod=0755 scripts/initfrom-s3.sh /usr/local/bin/initfrom-s3
 EXPOSE 80
 VOLUME /var/www/dolidock/documents
 

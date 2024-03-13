@@ -156,3 +156,64 @@ ingress:
   ingressClassName: nginx
   tls:
     certIssuer: ""
+
+cloudflared:
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+  probe:
+    enabled: true
+  enabled: false
+  image:
+      repository: highcanfly/net-tools
+      tag: 1.2.5
+  TunnelID: 3a7b5c9d-1e2f-4a6b-b9d8-c0e7f6a5b4c3
+  credentials: {"AccountTag":"1b3a9c8d7e6f5g4h3i2j1k0l","TunnelSecret":"m4n5o6p7q8r9s0t1u2v3w4x5y6z7A8B9C","TunnelID":"3a7b5c9d-1e2f-4a6b-b9d8-c0e7f6a5b4c3"}
+  # command: ["/bin/sh"]
+  # args: ["-c", "cd ~/ && touch file.txt && mknod -m 777 fifo p && cat fifo | netcat -k -l 8000 > fifo && sleep infinity"]
+  config: |
+    # Name of the tunnel you want to run
+    tunnel: lasersmart-gitea
+    credentials-file: /etc/cloudflared/creds/credentials.json
+    metrics: 0.0.0.0:2000
+    # grace-period: 180s
+    no-autoupdate: true
+    ingress:
+      - hostname: dolidock.sample.com
+        service: http://dolidock:80
+      - hostname: phpmyadmin.sample.com
+        service: http://phpmyadmin:80
+      # This rule matches any traffic which didn't match a previous rule, and responds with HTTP 404.
+      - service: http_status:404
+    cert: |
+      -----BEGIN PRIVATE KEY-----
+      MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgw7NV3o6KFY6H4Nck
+      wmTv5VGVOvMuwffVBOnqbiaTto2hRANCAAT0f28q1+2pRiq6zDZpyLOmQ4LlcmTQ
+      y9ck9HXc5+KpscYaWTtz3ask7Ng+jLWlyg9ch7Z613uVdsUG0ygcRUko
+      -----END PRIVATE KEY-----
+      -----BEGIN CERTIFICATE-----
+      MIICjDCCAXWgAwIBAgIUIvX6J9Q0v2Q1Y7Zz4v4Qz8Y3yjUwCgYIKoZIzj0EAwIw
+      gY8xCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
+      YW4gRnJhbmNpc2NvMRkwFwYDVQQKExBDbG91ZEZsYXJlLCBJbmMuMTgwNgYDVQQL
+      Ey9DbG91ZEZsYXJlIE9yaWdpbiBTU0wgRUNDIENlcnRpZmljYXRlIEF1dGhvcml0
+      eTAeFw0yMzExMTcxNjQ1MDBaFw0zODExMTMxNjQ1MDBaMGIxGTAXBgNVBAoTEENs
+      b3VkRmxhcmUsIEluYy4xHTAbBgNVBAsTFENsb3VkRmxhcmUgT3JpZ2luIENBMSYw
+      JAYDVQQDEx1DbG91ZEZsYXJlIE9yaWdpbiBDZXJ0aWZpY2F0ZTBZMBMGByqGSM49
+      AgEGCCqGSM49AwEHA0IABPR/byrX7alGKrrMNmnIs6ZDguVyZNDL1yT0ddzn4qmx
+      xhpZO3PdqyTs2D6MtaXKD1yHtnrXe5V2xQbTKBxFSSijggE0MIIBMDAOBgNVHQ8B
+      Af8EBAMCBaAwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMAwGA1UdEwEB
+      /wQCMAAwHQYDVR0OBBYEFMEBSh/gFX0N4MEMG9ICFL203FUXMB8GA1UdIwQYMBaA
+      FIUwXTsqcNTt1ZJnB/3rObQaDjinMEQGCCsGAQUFBwEBBDgwNjA0BggrBgEFBQcw
+      AYYoaHR0cDovL29jc3AuY2xvdWRmbGFyZS5jb20vb3JpZ2luX2VjY19jYTAtBgNV
+      HREEJjAkghEqLmxhc2Vyc21hcnQud29ya4IPbGFzZXJzbWFydC53b3JrMDwGA1Ud
+      HwQ1MDMwMaAvoC2GK2h0dHA6Ly9jcmwuY2xvdWRmbGFyZS5jb20vb3JpZ2luX2Vj
+      Y19jYS5jcmwwCgYIKoZIzj0EAwIDSAAwRQIhANIFwqsvS/GGKug8zraQ3wDmbOHT
+      tL+LXqeRlfe2g6qOAiBqjkcTYI/Ip1wcV0H4D4N3O1DBuKz81X85xCNIPvqbbw==
+      -----END CERTIFICATE-----
+      -----BEGIN ARGO TUNNEL TOKEN-----
+      eyJ6b25lSUQiOiI1ZGVkZjcxMGQ2MzBkNzQ2MzAzZjRlYTM0NGJmYTVlMyIsImFj
+      Y291bnRJRCI6IjJlNGFlOThkOGIyNTMyNWI0Mzg0NzRhZTUzZjBkMWM0Iiwic2Vy
+      dmljZUtleSI6ImJhZjQyYzIwLWY4ZjItNDYwZS1hZjE2LWQ1YzQwYjQyYjI1ZCIs
+      ImFwaVRva2VuIjoiOTlPbE90R2lELVc4WVFWamE2Y21XVFU4aGkxM1FiY19vMDN0
+      V3cyclMiJ9
+      -----END ARGO TUNNEL TOKEN-----
