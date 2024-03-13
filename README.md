@@ -268,6 +268,14 @@ dolidock:
   doliUrlRoot: https://erp.example.org
   adminHostname: admin-erp.example.org
   crontabuiHostname: crontabui-derp.example.org
+  s3Bucket: "master"
+  s3Path: "random-s3-path"
+  s3Endpoint: "https://random-s3-endpoint.com"
+  s3AccessKey: "random-access-key"
+  s3SecretKey: "random-secret-key"
+  s3Region: "random-region"
+  s3Cryptoken: "random-cryptoken"
+  doliInitFromS3: "false"
   dkimSelector: dkim
   dkimPrivateKey: "----BEGIN PRIVATE KEY-----|MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEA|rxSPI0KqL9mH2JyWFexZziV3RuE7DIf+IFVPLsrxSrfsZqYOFuBamfPVLVHNx+Ma|dbDPH+KzOc5sMNDkLebWg+qddpTm6Zy0mUACRbFijF1TjPRiwnpEpScGUSS+Cs8U|Coe+cQBuoTsIHpowYjVbps4=|-----END PRIVATE KEY-----"
 crontabui:
