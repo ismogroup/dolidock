@@ -42,8 +42,7 @@ spec:
               name: dolidock
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
-        image: {{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag
-          | default .Chart.AppVersion }}
+        image: {{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag | default .Chart.AppVersion }}
         name: mysql
         ports:
         - containerPort: 3306
@@ -51,12 +50,16 @@ spec:
         securityContext:
           runAsGroup: 0
           runAsUser: 0
+        {{- if .Values.persistence.enabled }}
         volumeMounts:
         - mountPath: /var/lib/mysql
           name: mysql-data
+        {{- end }}
       imagePullSecrets: {{ .Values.imagePullSecrets | default list | toJson }}
       restartPolicy: Always
+      {{- if .Values.persistence.enabled }}
       volumes:
       - name: mysql-data
         persistentVolumeClaim:
           claimName: mysql-data
+      {{- end }}

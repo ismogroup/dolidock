@@ -48,8 +48,7 @@ spec:
               name: dolidock
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
-        image: {{ .Values.dolirate.image.repository }}:{{ .Values.dolirate.image.tag
-          | default .Chart.AppVersion }}
+        image: {{ .Values.dolirate.image.repository }}:{{ .Values.dolirate.image.tag | default .Chart.AppVersion }}
         name: dolirate
         ports:
         - containerPort: 3000

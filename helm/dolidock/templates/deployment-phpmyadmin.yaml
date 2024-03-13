@@ -24,8 +24,7 @@ spec:
           value: {{ .Values.phpmyadmin.pmaHost }}
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
-        image: {{ .Values.phpmyadmin.image.repository }}:{{ .Values.phpmyadmin.image.tag
-          | default .Chart.AppVersion }}
+        image: {{ .Values.phpmyadmin.image.repository }}:{{ .Values.phpmyadmin.image.tag | default .Chart.AppVersion }}
         name: phpmyadmin
         ports:
         - containerPort: 80

@@ -33,8 +33,7 @@ spec:
               name: dolistock
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
-        image: {{ .Values.crontabui.crontabui.image.repository }}:{{ .Values.crontabui.crontabui.image.tag
-          | default .Chart.AppVersion }}
+        image: {{ .Values.crontabui.crontabui.image.repository }}:{{ .Values.crontabui.crontabui.image.tag | default .Chart.AppVersion }}
         name: crontabui
         ports:
         - containerPort: 8000
@@ -42,13 +41,17 @@ spec:
         securityContext:
           runAsGroup: 0
           runAsUser: 0
+        {{- if .Values.persistence.enabled }}
         volumeMounts:
         - mountPath: /opt/cron
           name: crontabui-data
+        {{- end }}
       imagePullSecrets: {{ .Values.imagePullSecrets | default list | toJson }}
       restartPolicy: Always
+      {{- if .Values.persistence.enabled }}
       volumes:
       - name: crontabui-data
         persistentVolumeClaim:
           claimName: crontabui-data
+      {{- end }}
 {{- end -}}

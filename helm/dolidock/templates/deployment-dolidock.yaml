@@ -75,8 +75,7 @@ spec:
         - name: BACKUP_TO
           value: {{ .Values.dolidock.backupTo }}
         imagePullPolicy: {{ .Values.dolidock.imagePullPolicy }}
-        image: {{ .Values.dolidock.image.repository }}:{{ .Values.dolidock.image.tag
-          | default .Chart.AppVersion }}
+        image: {{ .Values.dolidock.image.repository }}:{{ .Values.dolidock.image.tag | default .Chart.AppVersion }}
         name: dolidock
         ports:
         - containerPort: 80
@@ -84,12 +83,16 @@ spec:
         securityContext:
           runAsGroup: 0
           runAsUser: 0
+        {{- if .Values.persistence.enabled }}
         volumeMounts:
         - mountPath: /var/www/dolidock/documents
           name: dolidock-data
+        {{- end }}
       imagePullSecrets: {{ .Values.imagePullSecrets | default list | toJson }}
       restartPolicy: Always
+      {{- if .Values.persistence.enabled }}
       volumes:
       - name: dolidock-data
         persistentVolumeClaim:
           claimName: dolidock-data
+      {{- end }}
