@@ -254,7 +254,7 @@ helm install --create-namespace --namespace=dolidock dolidock highcanfly/dolidoc
 ```yaml
 dolidock:
   image: 
-    tag: 18.0.1.8
+    tag: 18.0.5.0
   allowedSenderDomains: "example.org"
   apiLayerKey: pc4d67c96cc4d67c96cTGH5qwbY
   # cloudflareApiKey: ViCgLwjv4soP55Mn
