@@ -223,7 +223,7 @@ function run() {
     mysql -u ${DOLI_DB_USER} -p${DOLI_DB_PASSWORD} -h ${DOLI_DB_HOST} -P ${DOLI_DB_HOST_PORT} ${DOLI_DB_NAME} -e "SELECT Q.LAST_INSTALLED_VERSION FROM (SELECT INET_ATON(CONCAT(value, REPEAT('.0', 3 - CHAR_LENGTH(value) + CHAR_LENGTH(REPLACE(value, '.', ''))))) as VERSION_ATON, value as LAST_INSTALLED_VERSION FROM llx_const WHERE name IN ('MAIN_VERSION_LAST_INSTALL', 'MAIN_VERSION_LAST_UPGRADE') and entity=0) Q ORDER BY VERSION_ATON DESC LIMIT 1" >/tmp/lastinstall.result 2>&1
     r=$?
     if [[ ${r} -ne 0 ]]; then
-      if ! is_boolean_yes "${DOLI_INSTALL_AUTO}"; then
+      if ! is_boolean_yes "${DOLI_INIT_FROM_S3}"; then
         echo "Initializing database from scratch ..."
         initializeDatabase
       else

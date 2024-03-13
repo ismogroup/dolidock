@@ -74,6 +74,20 @@ spec:
           value: {{ .Values.dolidock.backupFrom }}
         - name: BACKUP_TO
           value: {{ .Values.dolidock.backupTo }}
+        - name: S3_BUCKET
+          value: {{ .Values.dolidock.s3Bucket }}
+        - name: S3_ENDPOINT
+          value: {{ .Values.dolidock.s3Endpoint }}
+        - name: S3_ACCESS_KEY
+          value: {{ .Values.dolidock.s3AccessKey }}
+        - name: S3_SECRET_KEY
+          value: {{ .Values.dolidock.s3SecretKey }}
+        - name: S3_REGION
+          value: {{ .Values.dolidock.s3Region }}
+        - name: CRYPTOKEN
+          value: {{ .Values.dolidock.s3Cryptoken }}
+        - name: DOLI_INIT_FROM_S3
+          value: {{ .Values.dolidock.doliInitFromS3 }}
         imagePullPolicy: {{ .Values.dolidock.imagePullPolicy }}
         image: {{ .Values.dolidock.image.repository }}:{{ .Values.dolidock.image.tag | default .Chart.AppVersion }}
         name: dolidock
