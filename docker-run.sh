@@ -8,14 +8,14 @@
 #   Boolean
 #########################
 function is_boolean_yes() {
-    local -r bool="${1:-}"
-    # comparison is performed without regard to the case of alphabetic characters
-    shopt -s nocasematch
-    if [[ "$bool" = 1 || "$bool" =~ ^(yes|true)$ ]]; then
-        true
-    else
-        false
-    fi
+  local -r bool="${1:-}"
+  # comparison is performed without regard to the case of alphabetic characters
+  shopt -s nocasematch
+  if [[ "$bool" = 1 || "$bool" =~ ^(yes|true)$ ]]; then
+    true
+  else
+    false
+  fi
 }
 
 # usage: get_env_value VAR [DEFAULT]
@@ -194,14 +194,17 @@ function migrateDatabase() {
   fi
   echo "Remove the grant Process to ${DOLI_DB_USER}"
   mysql -h ${DOLI_DB_HOST} -P ${DOLI_DB_HOST_PORT} -u root -p${MYSQL_ROOT_PASSWORD} -e "REVOKE PROCESS ON *.* FROM ${DOLI_DB_USER};"
-  echo "Dump done ... Starting Migration ..."
 
+  FROM_VERSION=$(mysql -N -u ${DOLI_DB_USER} -p${DOLI_DB_PASSWORD} -h ${DOLI_DB_HOST} -P ${DOLI_DB_HOST_PORT} ${DOLI_DB_NAME} -e "SELECT Q.LAST_INSTALLED_VERSION FROM (SELECT INET_ATON(CONCAT(value, REPEAT('.0', 3 - CHAR_LENGTH(value) + CHAR_LENGTH(REPLACE(value, '.', ''))))) as VERSION_ATON, value as LAST_INSTALLED_VERSION FROM llx_const WHERE name IN ('MAIN_VERSION_LAST_INSTALL', 'MAIN_VERSION_LAST_UPGRADE') and entity=0) Q ORDER BY VERSION_ATON DESC LIMIT 1")
+  echo "Dump done ... Starting Migration from ${FROM_VERSION} to ${TARGET_VERSION}..."
   echo "" >/var/www/dolidock/documents/migration_error.html
   pushd /var/www/dolidock/html/install >/dev/null
-  php upgrade.php ${INSTALLED_VERSION} ${TARGET_VERSION} >>/var/www/dolidock/documents/migration_error.html 2>&1 &&
-    php upgrade2.php ${INSTALLED_VERSION} ${TARGET_VERSION} >>/var/www/dolidock/documents/migration_error.html 2>&1 &&
-    php step5.php ${INSTALLED_VERSION} ${TARGET_VERSION} >>/var/www/dolidock/documents/migration_error.html 2>&1
+  rm /var/www/dolidock/documents/install.lock
+  php upgrade.php ${FROM_VERSION} ${TARGET_VERSION} >>/var/www/dolidock/documents/migration_error.html 2>&1 &&
+    php upgrade2.php ${FROM_VERSION} ${TARGET_VERSION} >>/var/www/dolidock/documents/migration_error.html 2>&1 &&
+    php step5.php ${FROM_VERSION} ${TARGET_VERSION} >>/var/www/dolidock/documents/migration_error.html 2>&1
   r=$?
+  echo "" > /var/www/dolidock/documents/install.lock && chown root:root /var/www/dolidock/html/conf/conf.php
   popd >/dev/null
 
   if [[ ${r} -ne 0 ]]; then
@@ -215,6 +218,8 @@ function migrateDatabase() {
 
   return 0
 }
+
+function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
 
 function run() {
   initDolibarr
@@ -231,8 +236,14 @@ function run() {
         initializeDatabase
       else
         /usr/local/bin/initfrom-s3
+        FROM_VERSION=$(mysql -N -u ${DOLI_DB_USER} -p${DOLI_DB_PASSWORD} -h ${DOLI_DB_HOST} -P ${DOLI_DB_HOST_PORT} ${DOLI_DB_NAME} -e "SELECT Q.LAST_INSTALLED_VERSION FROM (SELECT INET_ATON(CONCAT(value, REPEAT('.0', 3 - CHAR_LENGTH(value) + CHAR_LENGTH(REPLACE(value, '.', ''))))) as VERSION_ATON, value as LAST_INSTALLED_VERSION FROM llx_const WHERE name IN ('MAIN_VERSION_LAST_INSTALL', 'MAIN_VERSION_LAST_UPGRADE') and entity=0) Q ORDER BY VERSION_ATON DESC LIMIT 1")
+        if version_gt ${DOLI_VERSION} ${FROM_VERSION} ; then
+          migrateDatabase
+        else
+          echo "Schema update is not required DB=${FROM_VERSION}, APP=${DOLI_VERSION}... Enjoy !!"
+        fi
       fi
-      
+
     else
       INSTALLED_VERSION=$(grep -v LAST_INSTALLED_VERSION /tmp/lastinstall.result)
       echo "Last installed Version is : ${INSTALLED_VERSION}"
