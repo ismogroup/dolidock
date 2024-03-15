@@ -204,7 +204,7 @@ function migrateDatabase() {
     php upgrade2.php ${FROM_VERSION} ${TARGET_VERSION} >>/var/www/dolidock/documents/migration_error.html 2>&1 &&
     php step5.php ${FROM_VERSION} ${TARGET_VERSION} >>/var/www/dolidock/documents/migration_error.html 2>&1
   r=$?
-  echo "" > /var/www/dolidock/documents/install.lock && chown root:root /var/www/dolidock/html/conf/conf.php
+  echo "" > /var/www/dolidock/documents/install.lock && chown root:root /var/www/dolidock/html/conf/conf.php && chmod 444 /var/www/dolidock/html/conf/conf.php
   popd >/dev/null
 
   if [[ ${r} -ne 0 ]]; then
