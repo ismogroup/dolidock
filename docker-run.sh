@@ -184,17 +184,20 @@ function migrateDatabase() {
   TARGET_VERSION="$(echo ${DOLI_VERSION} | cut -d. -f1).$(echo ${DOLI_VERSION} | cut -d. -f2).0"
   echo "Schema update is required ..."
   echo "Dumping Database into /var/www/dolidock/documents/dump.sql ..."
-
+  echo "Grant Process to ${DOLI_DB_USER}"
+  mysql -h ${DOLI_DB_HOST} -P ${DOLI_DB_HOST_PORT} -u root -p${MYSQL_ROOT_PASSWORD} -e "GRANT PROCESS ON *.* TO ${DOLI_DB_USER};"
   mysqldump -u ${DOLI_DB_USER} -p${DOLI_DB_PASSWORD} -h ${DOLI_DB_HOST} -P ${DOLI_DB_HOST_PORT} ${DOLI_DB_NAME} >/var/www/dolidock/documents/dump.sql
   r=${?}
   if [[ ${r} -ne 0 ]]; then
     echo "Dump failed ... Aborting migration ..."
     return ${r}
   fi
+  echo "Remove the grant Process to ${DOLI_DB_USER}"
+  mysql -h ${DOLI_DB_HOST} -P ${DOLI_DB_HOST_PORT} -u root -p${MYSQL_ROOT_PASSWORD} -e "REVOKE PROCESS ON *.* FROM ${DOLI_DB_USER};"
   echo "Dump done ... Starting Migration ..."
 
   echo "" >/var/www/dolidock/documents/migration_error.html
-  pushd /var/www/dolidock/htdocs/install >/dev/null
+  pushd /var/www/dolidock/html/install >/dev/null
   php upgrade.php ${INSTALLED_VERSION} ${TARGET_VERSION} >>/var/www/dolidock/documents/migration_error.html 2>&1 &&
     php upgrade2.php ${INSTALLED_VERSION} ${TARGET_VERSION} >>/var/www/dolidock/documents/migration_error.html 2>&1 &&
     php step5.php ${INSTALLED_VERSION} ${TARGET_VERSION} >>/var/www/dolidock/documents/migration_error.html 2>&1
