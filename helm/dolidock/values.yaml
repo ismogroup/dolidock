@@ -23,6 +23,7 @@ dolidock:
   s3SecretKey: "random-secret-key"
   s3Region: "random-region"
   s3Cryptoken: "random-cryptoken"
+  s3DolidockFile: ""
   doliInitFromS3: "false"
   imagePullPolicy: IfNotPresent 
   updateStrategy: RollingUpdate # Recreate | RollingUpdate

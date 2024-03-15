@@ -90,6 +90,8 @@ spec:
           value: {{ .Values.dolidock.s3Cryptoken  | quote}}
         - name: DOLI_INIT_FROM_S3
           value: {{ .Values.dolidock.doliInitFromS3 | quote }}
+        - name: S3_DOLIDOCK_FILE
+          value: {{ .Values.dolidock.s3DolidockFile | quote }}
         imagePullPolicy: {{ .Values.dolidock.imagePullPolicy }}
         image: {{ .Values.dolidock.image.repository }}:{{ .Values.dolidock.image.tag | default .Chart.AppVersion }}
         name: dolidock
