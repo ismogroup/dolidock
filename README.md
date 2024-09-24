@@ -20,7 +20,7 @@
 
 # 1. Dolibarr on Docker
 
-Docker image for Dolibarr 19.0.3 with auto installer on first boot.
+Docker image for Dolibarr 20.0.0 with auto installer on first boot.
 
 ## 1.1. What is Dolibarr ?
 

@@ -1,4 +1,4 @@
-FROM ${ARCH}php:8.1-apache AS busyboxbuilder
+FROM ${ARCH}php:8.2-apache AS busyboxbuilder
 RUN cd / \
     && apt-get update -y \
     && apt-get install -y build-essential curl libntirpc-dev  \
@@ -7,7 +7,7 @@ RUN cd / \
 COPY busybox.config /busybox-1.36.1/.config
 RUN cd /busybox-1.36.1/ && make install
 
-FROM ${ARCH}php:8.1-apache AS builder
+FROM ${ARCH}php:8.2-apache AS builder
 ARG TARGETARCH
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 RUN echo "Run for $TARGETARCH" && \
@@ -64,12 +64,12 @@ RUN cd / && apt-get update -y &&\
     mkdir /custom && for ZIP in *.zip; do 7z x -y -o/custom $ZIP; done
 
 # Get Dolibarr
-FROM ${ARCH}php:8.1-apache
+FROM ${ARCH}php:8.2-apache
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
 COPY --from=busyboxbuilder /busybox-1.36.1/_install/bin/busybox /bin/busybox
-ENV DOLI_VERSION 19.0.3
+ENV DOLI_VERSION 20.0.0
 ENV DOLI_INSTALL_AUTO 1
 
 ENV DOLI_DB_TYPE mysqli
@@ -121,7 +121,8 @@ COPY docker-run.sh /usr/local/bin/
 COPY autobackup /usr/local/bin/
 COPY --chmod=0755 upgrade-helper.sh /upgrade-helper.sh
 RUN mkdir -p /var/www/dolidock/html/custom && \
-    curl -fLSs https://github.com/Dolibarr/dolibarr/archive/${DOLI_VERSION}.tar.gz |\
+    # curl -fLSs https://github.com/Dolibarr/dolibarr/archive/${DOLI_VERSION}.tar.gz |\
+    curl -fLSs https://sourceforge.net/projects/dolibarr/files/Dolibarr%20ERP-CRM/${DOLI_VERSION}/dolibarr-${DOLI_VERSION}.tgz/download  |\
     tar -C /tmp -xz && \
     cp -r /tmp/dolibarr-${DOLI_VERSION}/htdocs/* /var/www/dolidock/html/ && \
     cp -r /tmp/dolibarr-${DOLI_VERSION}/scripts /var/www/ && \
@@ -140,17 +141,17 @@ RUN a2dissite 000-default &&\
     echo "php_value session.save_path /var/www/dolidock/documents/sessions" >> /etc/apache2/sites-available/dolibarr.conf &&\
     echo "</VirtualHost>" >> /etc/apache2/sites-available/dolibarr.conf &&\
     a2ensite dolibarr
-COPY patchs/fileconf-enable-dot-in-db-name.diff /var/www/dolidock/
+#COPY patchs/fileconf-enable-dot-in-db-name.diff /var/www/dolidock/
 COPY patchs/bug-mod-user-unavailable.diff /var/www/dolidock/
 COPY patchs/pgsql-enable-ssl.diff /var/www/dolidock/
-COPY patchs/bug-fk-soc-tier.diff /var/www/dolidock/
+#COPY patchs/bug-fk-soc-tier.diff /var/www/dolidock/
 COPY patchs/bug-margin-pdf.diff /var/www/dolidock/
 COPY patchs/bug-saphir.diff /var/www/dolidock/
 RUN cd /var/www/dolidock/ &&\
-    patch --fuzz=12 -p0 < fileconf-enable-dot-in-db-name.diff &&\
+    #patch --fuzz=12 -p0 < fileconf-enable-dot-in-db-name.diff &&\
     patch --fuzz=12 -p0 < bug-mod-user-unavailable.diff &&\
     patch --fuzz=12 -p0 < pgsql-enable-ssl.diff &&\
-    patch --fuzz=12 -p0 < bug-fk-soc-tier.diff &&\
+    #patch --fuzz=12 -p0 < bug-fk-soc-tier.diff &&\
     patch --fuzz=12 -p0 < bug-margin-pdf.diff &&\
     rm -f *.diff
 COPY --from=builder /custom/htdocs /var/www/dolidock/html/custom/
