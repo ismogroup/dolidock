@@ -69,7 +69,7 @@ LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
 COPY --from=busyboxbuilder /busybox-1.36.1/_install/bin/busybox /bin/busybox
-ENV DOLI_VERSION 19.0.0
+ENV DOLI_VERSION 19.0.3
 ENV DOLI_INSTALL_AUTO 1
 
 ENV DOLI_DB_TYPE mysqli
@@ -159,6 +159,7 @@ COPY --chmod=0755 scripts/initfrom-s3.sh /usr/local/bin/initfrom-s3
 COPY --chmod=0755 migrate2.sh /usr/local/bin/migrate2
 EXPOSE 80
 VOLUME /var/www/dolidock/documents
+WORKDIR /var/www/dolidock
 
 ENTRYPOINT ["/usr/local/bin/docker-run.sh"]
 

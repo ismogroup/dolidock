@@ -20,7 +20,7 @@
 
 # 1. Dolibarr on Docker
 
-Docker image for Dolibarr 18.0.1 with auto installer on first boot.
+Docker image for Dolibarr 19.0.3 with auto installer on first boot.
 
 ## 1.1. What is Dolibarr ?
 
@@ -254,7 +254,7 @@ helm install --create-namespace --namespace=dolidock dolidock highcanfly/dolidoc
 ```yaml
 dolidock:
   image: 
-    tag: 18.0.5.0
+    tag: 19.0.1.0
   allowedSenderDomains: "example.org"
   apiLayerKey: pc4d67c96cc4d67c96cTGH5qwbY
   # cloudflareApiKey: ViCgLwjv4soP55Mn
@@ -278,6 +278,10 @@ dolidock:
   doliInitFromS3: "false"
   dkimSelector: dkim
   dkimPrivateKey: "----BEGIN PRIVATE KEY-----|MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEA|rxSPI0KqL9mH2JyWFexZziV3RuE7DIf+IFVPLsrxSrfsZqYOFuBamfPVLVHNx+Ma|dbDPH+KzOc5sMNDkLebWg+qddpTm6Zy0mUACRbFijF1TjPRiwnpEpScGUSS+Cs8U|Coe+cQBuoTsIHpowYjVbps4=|-----END PRIVATE KEY-----"
+mysql:
+  image:
+    repository: mysql
+    tag: 8
 crontabui:
   enabled: false
 smtpd:

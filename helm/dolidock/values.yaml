@@ -104,7 +104,7 @@ memcached:
 mysql:
   image:
     repository: mysql
-    tag: latest
+    tag: 8
   resources:
     limits:
       cpu: "1"
