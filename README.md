@@ -17,6 +17,7 @@
   - [1.12. Known issues](#112-known-issues)
   - [1.13. Update](#113-update)
 - [2. Helm Chart](#2-helm-chart)
+- [3. Migration Script](#3-migration-script)
 
 # 1. Dolibarr on Docker
 
@@ -329,3 +330,34 @@ cloudflared:
 ```
 
 Okteto can reuse the same PVC, use --set smtpd.useDolidockPVC=true
+
+# 3. Migration Script
+
+A bash script that performs various database migration tasks is included in the Docker image. The script provides several functions to manage database schema updates, dump and restore database backups, and open a MySQL shell to the database.
+
+**Available Commands**
+
+* `dumpDatabase [dumpfile.sql]`: Dump the database to a file. If no file name is provided, the default dump file name is `dump.sql`.
+* `restoreDatabase [dumpfile.sql]`: Restore the database from a file. The file can be a `.sql`, `.gz`, `.bz2`, or `.zip` file.
+* `migrateDatabase`: Migrate the database to the current version.
+* `automigrate`: Migrate the database to the current version if required.
+* `mysql_shell`: Open a MySQL shell to the database.
+
+**Usage**
+
+To run the script for migrating the database, execute the following command:
+```
+source /usr/local/bin/migrate2 && automigrate
+```
+
+
+**Script Functions**
+
+The script includes several functions that can be called directly:
+
+* `grantProcess`: Grants the `PROCESS` privilege to the database user.
+* `revokeProcess`: Revokes the `PROCESS` privilege from the database user.
+* `dumpDatabase`: Dumps the database to a file.
+* `restoreDatabase`: Restores the database from a file.
+* `migrateDatabase`: Migrates the database to the current version.
+* `automigrate`: Migrates the database to the current version if required.
