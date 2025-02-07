@@ -1,11 +1,12 @@
-FROM php:8.3-apache AS busyboxbuilder
-RUN cd / \
-    && apt-get update -y \
-    && apt-get install -y build-essential curl libntirpc-dev  \
-    && curl -L https://busybox.net/downloads/busybox-1.37.0.tar.bz2 | tar -xjv \
-    && cd /busybox-1.37.0/
-COPY busybox.config /busybox-1.37.0/.config
-RUN cd /busybox-1.37.0/ && make install
+# FROM php:8.3-apache AS busyboxbuilder
+# RUN cd / \
+#     && apt-get update -y \
+#     && apt-get install -y build-essential curl libntirpc-dev  \
+#     && curl -L https://busybox.net/downloads/busybox-1.37.0.tar.bz2 | tar -xjv \
+#     && cd /busybox-1.37.0/
+# COPY busybox.config /busybox-1.37.0/.config
+# RUN cd /busybox-1.37.0/ && make install
+FROM  ismogroup/busybox:1.37.0-php-8.3-apache AS busyboxbuilder
 
 FROM php:8.3-apache AS builder
 ARG TARGETARCH
