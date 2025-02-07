@@ -18,6 +18,7 @@
   - [1.13. Update](#113-update)
 - [2. Helm Chart](#2-helm-chart)
 - [3. Migration Script](#3-migration-script)
+    - [Local docker build](#local-docker-build)
 
 # 1. Dolibarr on Docker
 
@@ -361,3 +362,13 @@ The script includes several functions that can be called directly:
 * `restoreDatabase`: Restores the database from a file.
 * `migrateDatabase`: Migrates the database to the current version.
 * `automigrate`: Migrates the database to the current version if required.
+
+### Local docker build
+
+This repository was designed to use the [GitHub Actions](.github/workflows/publish-docker-hub.yml) to build and publish the Docker image to Docker Hub. However, you can also build the image locally using the following commands:
+
+```sh
+docker login --username=ismogroup
+docker buildx create --use
+docker buildx build --push --platform linux/amd64,linux/arm64 --tag ismogroup/dolidock:20.0.3.0 --tag ismogroup/dolidock:latest  .
+```

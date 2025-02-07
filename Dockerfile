@@ -1,19 +1,19 @@
-FROM ${ARCH}php:8.2-apache AS busyboxbuilder
+FROM php:8.3-apache AS busyboxbuilder
 RUN cd / \
     && apt-get update -y \
     && apt-get install -y build-essential curl libntirpc-dev  \
-    && curl -L https://busybox.net/downloads/busybox-1.36.1.tar.bz2 | tar -xjv \
-    && cd /busybox-1.36.1/
-COPY busybox.config /busybox-1.36.1/.config
-RUN cd /busybox-1.36.1/ && make install
+    && curl -L https://busybox.net/downloads/busybox-1.37.0.tar.bz2 | tar -xjv \
+    && cd /busybox-1.37.0/
+COPY busybox.config /busybox-1.37.0/.config
+RUN cd /busybox-1.37.0/ && make install
 
-FROM ${ARCH}php:8.2-apache AS builder
+FROM php:8.3-apache AS builder
 ARG TARGETARCH
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 RUN echo "Run for $TARGETARCH" && \
     if [[ "$TARGETARCH" == "amd64" ]] ; then \
-        curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb > /tmp/mysql-apt-config_0.8.22-1_all.deb && \
-        DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.22-1_all.deb && \
+        curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.33-1_all.deb > /tmp/mysql-apt-config_0.8.33-1_all.deb && \
+        DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.33-1_all.deb && \
         apt-get update -y &&\
         apt-get install -y --no-install-recommends mysql-client lsb-release wget gnupg ; \
     else \
@@ -64,11 +64,11 @@ RUN cd / && apt-get update -y &&\
     mkdir /custom && for ZIP in *.zip; do 7z x -y -o/custom $ZIP; done
 
 # Get Dolibarr
-FROM ${ARCH}php:8.2-apache
+FROM php:8.3-apache
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
-COPY --from=busyboxbuilder /busybox-1.36.1/_install/bin/busybox /bin/busybox
+COPY --from=busyboxbuilder /busybox-1.37.0/_install/bin/busybox /bin/busybox
 ENV DOLI_VERSION 20.0.3
 ENV DOLI_INSTALL_AUTO 1
 
@@ -104,8 +104,8 @@ RUN echo "Run for $TARGETARCH" && \
         apt-get update -y \
         && apt-get dist-upgrade -y \
         && apt-get install -y --no-install-recommends && \
-        curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.22-1_all.deb > /tmp/mysql-apt-config_0.8.22-1_all.deb && \
-        DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.22-1_all.deb && \
+        curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.33-1_all.deb > /tmp/mysql-apt-config_0.8.33-1_all.deb && \
+        DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.33-1_all.deb && \
         apt-get update -y &&\
         apt-get install -y --no-install-recommends mysql-client lsb-release wget gnupg xz-utils ; \
     else \
