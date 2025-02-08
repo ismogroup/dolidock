@@ -37,14 +37,11 @@ RUN apt-get update -y \
         libzip-dev \
         libbz2-dev \
         libmemcached-dev \
-        postgresql-client \
         cron 
 
 RUN docker-php-ext-install opcache \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) calendar intl mysqli pdo_mysql gd soap zip \
-    && docker-php-ext-configure pgsql -with-pgsql \
-    && docker-php-ext-install pdo_pgsql pgsql \
     && docker-php-ext-configure ldap --with-libdir=lib/$(gcc -dumpmachine)/ \
     && docker-php-ext-install -j$(nproc) ldap \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
