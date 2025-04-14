@@ -6,9 +6,9 @@
 #     && cd /busybox-1.37.0/
 # COPY busybox.config /busybox-1.37.0/.config
 # RUN cd /busybox-1.37.0/ && make install
-FROM  ismogroup/busybox:1.37.0-php-8.4-apache AS busyboxbuilder
+FROM  ismogroup/busybox:1.37.0-php-8.3-apache AS busyboxbuilder
 
-FROM php:8.4-apache AS builder
+FROM php:8.3-apache AS builder
 ARG TARGETARCH
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 RUN echo "Run for $TARGETARCH" && \
@@ -79,7 +79,7 @@ RUN apt-get update -y &&\
 
 
 # Get Dolibarr
-FROM php:8.4-apache
+FROM php:8.3-apache
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
