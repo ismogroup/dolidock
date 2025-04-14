@@ -1,4 +1,4 @@
-# FROM php:8.3-apache AS busyboxbuilder
+# FROM php:8.4-apache AS busyboxbuilder
 # RUN cd / \
 #     && apt-get update -y \
 #     && apt-get install -y build-essential curl libntirpc-dev  \
@@ -6,9 +6,9 @@
 #     && cd /busybox-1.37.0/
 # COPY busybox.config /busybox-1.37.0/.config
 # RUN cd /busybox-1.37.0/ && make install
-FROM  ismogroup/busybox:1.37.0-php-8.3-apache AS busyboxbuilder
+FROM  ismogroup/busybox:1.37.0-php-8.4-apache AS busyboxbuilder
 
-FROM php:8.3-apache AS builder
+FROM php:8.4-apache AS builder
 ARG TARGETARCH
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 RUN echo "Run for $TARGETARCH" && \
@@ -39,14 +39,14 @@ RUN apt-get update -y \
         libmemcached-dev \
         cron 
 
-RUN docker-php-ext-install opcache \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) calendar intl mysqli pdo_mysql gd soap zip \
-    && docker-php-ext-configure ldap --with-libdir=lib/$(gcc -dumpmachine)/ \
-    && docker-php-ext-install -j$(nproc) ldap \
-    && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
-    && docker-php-ext-install imap \
-    && docker-php-ext-configure bz2 \
+RUN docker-php-ext-install opcache
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) calendar intl mysqli pdo_mysql gd soap zip
+RUN  docker-php-ext-configure ldap --with-libdir=lib/$(gcc -dumpmachine)/ \
+    && docker-php-ext-install -j$(nproc) ldap 
+# RUN  docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
+#     && docker-php-ext-install imap 
+RUN  docker-php-ext-configure bz2 \
     && docker-php-ext-install bz2
 RUN mkdir -p /usr/src/php/ext/memcached && \
     git clone https://github.com/php-memcached-dev/php-memcached /usr/src/php/ext/memcached && \
@@ -58,16 +58,33 @@ RUN mkdir -p /usr/src/php/ext/memcached && \
 RUN cd / && apt-get update -y &&\
     apt-get install -y --no-install-recommends p7zip-full &&\
     git clone https://github.com/highcanfly-club/DoliMods.git && \
-    cd /DoliMods/build && rm -f makepack-FacturX.conf makepack-Verifystock.conf && echo "all" | perl makepack-dolibarrmodule.pl && \
-    mkdir /custom && for ZIP in *.zip; do 7z x -y -o/custom $ZIP; done
+    cd /DoliMods/dev/build && rm -f makepack-HelloAsso.conf && echo "all" | perl makepack-dolibarrmodule.pl && \
+    mkdir -p /custom && for ZIP in *.zip; do 7z x -y -o/custom $ZIP; done
+RUN apt-get update -y &&\
+    apt-get install -y --no-install-recommends curl git libsodium-dev p7zip-full &&\
+    curl -LsS https://github.com/phpstan/phpstan/releases/download/2.1.11/phpstan.phar -o /usr/local/bin/phpstan.phar &&\
+    chmod +x /usr/local/bin/phpstan.phar &&\
+    curl -LsS https://github.com/humbug/php-scoper/releases/download/0.18.16/php-scoper.phar -o /usr/local/bin/php-scoper.phar &&\
+    chmod +x /usr/local/bin/php-scoper.phar &&\
+    git clone https://inligit.fr/cap-rel/dolibarr/plugin-facturx.git &&\
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&\
+    php composer-setup.php &&\
+    php -r "unlink('composer-setup.php');" &&\
+    mv composer.phar //usr/local/bin/composer.phar &&\
+    cd plugin-facturx &&\
+    composer.phar install &&\
+    php build/buildzip.php &&\
+    cp /tmp/module_facturx-*.zip . &&\
+    mkdir -p /custom/htdocs && for ZIP in *.zip; do 7z x -y -o/custom/htdocs $ZIP; done
+
 
 # Get Dolibarr
-FROM php:8.3-apache
+FROM php:8.4-apache
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
 COPY --from=busyboxbuilder /busybox-1.37.0/_install/bin/busybox /bin/busybox
-ENV DOLI_VERSION 20.0.3
+ENV DOLI_VERSION 21.0.1
 ENV DOLI_INSTALL_AUTO 1
 
 ENV DOLI_DB_TYPE mysqli
@@ -150,7 +167,7 @@ RUN cd /var/www/dolidock/ &&\
     patch --fuzz=12 -p0 < bug-mod-user-unavailable.diff &&\
     patch --fuzz=12 -p0 < pgsql-enable-ssl.diff &&\
     #patch --fuzz=12 -p0 < bug-fk-soc-tier.diff &&\
-    patch --fuzz=12 -p0 < bug-margin-pdf.diff &&\
+    #patch --fuzz=12 -p0 < bug-margin-pdf.diff &&\
     rm -f *.diff
 COPY --from=builder /custom/htdocs /var/www/dolidock/html/custom/
 RUN curl -L https://dl.min.io/client/mc/release/linux-$(dpkg --print-architecture)/mc > /usr/local/bin/mc && chmod +x /usr/local/bin/mc

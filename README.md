@@ -1,374 +1,295 @@
+# Dolidock: Enhanced Dolibarr for Kubernetes
+
 [![Publish image to docker Hub](https://github.com/ismogroup/dolidock/actions/workflows/publish-docker-hub.yml/badge.svg)](https://hub.docker.com/r/ismogroup/dolidock)
 
-- [1. Dolibarr on Docker](#1-dolibarr-on-docker)
-  - [1.1. What is Dolibarr ?](#11-what-is-dolibarr-)
-  - [1.2. What differs ?](#12-what-differs-)
-    - [1.2.1. Docker image](#121-docker-image)
-    - [1.2.2. Docker Compose stack / Kubernetes](#122-docker-compose-stack--kubernetes)
-  - [1.3. How to ?](#13-how-to-)
-  - [1.4. Initializing Dolibarr Database from a File in an S3 Bucket](#14-initializing-dolibarr-database-from-a-file-in-an-s3-bucket)
-  - [1.5. Deploy on Okteto](#15-deploy-on-okteto)
-  - [1.6. Deploy on other Kubernetes cluster](#16-deploy-on-other-kubernetes-cluster)
-  - [1.7. DKIM key and \_domainkey record](#17-dkim-key-and-_domainkey-record)
-  - [1.8. SMTPd server](#18-smtpd-server)
-  - [1.9. Dolirate](#19-dolirate)
-  - [1.10. Crontab-UI](#110-crontab-ui)
-  - [1.11. PhpMyAdmin](#111-phpmyadmin)
-  - [1.12. Known issues](#112-known-issues)
-  - [1.13. Update](#113-update)
-- [2. Helm Chart](#2-helm-chart)
-- [3. Migration Script](#3-migration-script)
-    - [Local docker build](#local-docker-build)
+Streamlined Dolibarr ERP & CRM deployment with advanced features for Kubernetes environments.
 
-# 1. Dolibarr on Docker
+## Table of Contents
 
-Docker image for Dolibarr 20.0.0 with auto installer on first boot.
+- [Dolidock: Enhanced Dolibarr for Kubernetes](#dolidock-enhanced-dolibarr-for-kubernetes)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+    - [What is Dolibarr?](#what-is-dolibarr)
+  - [Features](#features)
+    - [Docker Image Enhancements](#docker-image-enhancements)
+    - [Kubernetes Stack Components](#kubernetes-stack-components)
+  - [Deployment Options](#deployment-options)
+    - [Prerequisites](#prerequisites)
+    - [Quick Start with Helm](#quick-start-with-helm)
+    - [Deploying on Okteto](#deploying-on-okteto)
+    - [Deploying on Other Kubernetes Clusters](#deploying-on-other-kubernetes-clusters)
+  - [Configuration](#configuration)
+    - [Environment Variables](#environment-variables)
+    - [Email Configuration](#email-configuration)
+    - [S3 Backup and Restore](#s3-backup-and-restore)
+  - [Maintenance Operations](#maintenance-operations)
+    - [Database Migration](#database-migration)
+    - [Updating Dolibarr](#updating-dolibarr)
+    - [Backup and Restore](#backup-and-restore)
+  - [Advanced Features](#advanced-features)
+    - [SMTPd with DKIM Signing](#smtpd-with-dkim-signing)
+    - [Dolirate Integration](#dolirate-integration)
+    - [Crontab-UI](#crontab-ui)
+    - [PhpMyAdmin Access](#phpmyadmin-access)
+  - [Known Issues](#known-issues)
+  - [Building Locally](#building-locally)
 
-## 1.1. What is Dolibarr ?
+## Overview
 
-Dolibarr ERP & CRM is a modern software package to manage your organization's activity (contacts, suppliers, invoices, orders, stocks, agenda, ...).
+Dolidock is an enhanced Docker image for Dolibarr ERP & CRM, optimized for Kubernetes deployments. It provides automatic database initialization, migration capabilities, automated backups, and S3 integration for reliable data management.
 
-> [More information](https://github.com/dolibarr/dolibarr)
+### What is Dolibarr?
 
-## 1.2. What differs ?
+Dolibarr ERP & CRM is a modern software package to manage your organization's activity (contacts, suppliers, invoices, orders, stocks, agenda, etc.).
 
-### 1.2.1. Docker image
+> [Learn more about Dolibarr](https://github.com/dolibarr/dolibarr)
 
-- Use latest MySql libraries from Oracle/MySql
-- Supports bzip2 compression for backup
-- Can be scaled up (php session are shared) / tested up to 4 replicas
-- php-memcached
-- Contains all Dolicloud/DoliMods module
-- linux/amd64 and linux/arm64 platform (on arm db client is MariaDB, Mysql on amd64 )
+## Features
 
-### 1.2.2. Docker Compose stack / Kubernetes
+### Docker Image Enhancements
 
-- builtin Postfix server with dkim signing and Cloudflare DDNS (scalable)
-- builin memcached server
-- builtin phpMyAdmin server
-- builtin cron server with web ui and cloud commander
+- Latest MySQL libraries from Oracle/MySQL
+- Support for bzip2 compression for backup
+- Horizontal scaling with shared PHP sessions (tested up to 4 replicas)
+- PHP Memcached support for improved performance
+- Includes all Dolicloud/DoliMods modules
+- Multi-architecture support (linux/amd64 and linux/arm64)
+- Automatic database migration
+- Automatic email backups
+- S3 bucket restoration
 
-## 1.3. How to ?
+### Kubernetes Stack Components
 
-The simplest use is to use docker compose…
-It is designed for Cloudflare, it automatically updates a Cloudflare DNS zone. You need to get your ZoneID and generate a token (api key) for editing your dns zone.  
-You must also create a CLOUDFLARE_DNS_RECORDS host in Cloudflare UI before first run.  
-All this are for having a valid POSTFIX_HOSTNAME dns record (for SPF) and a Letsencrypt certificate.  
-for creating a DKIM key simply issue:  
+- Built-in Postfix server with DKIM signing and Cloudflare DDNS (scalable)
+- Built-in Memcached server for performance
+- Built-in phpMyAdmin for database management
+- Built-in cron server with web UI and cloud commander
+- Cloudflare tunnel support
 
-```sh
-openssl genrsa -out /dev/stdout 2048
-```
+## Deployment Options
 
-And replace all newline by |  
+### Prerequisites
 
-You finally need to define some environment variables:  
+Before deploying, you'll need:
 
-```sh
-#!/bin/bash
-NAMESPACE="oktetons"
-FQDN_DOLISTOCK="erp-oketons.cloud.okteto.net"
-DOLI_ADMIN_LOGIN="administrator"
-DOLI_ADMIN_PASSWORD="strongpassword"
-DOLI_DB_USER="adbuser"
-DOLI_DB_PASSWORD="anotherpassword"
-DOLI_DB_NAME="dolismo"
-MYSQL_ROOT_PASSWORD="averystrongpassword"
-DKIM_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----|MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEA|rxSPI0KqL9mH2JyWFexZziV3RuE7DIf+IFVPLsrxSrfsZqYOFuBamfPVLVHNx+Ma|dbDPH+KzOc5sMNDkLebWg+qddpTm6Zy0mUACRbFijF1TjPRiwnpEpScGUSS+Cs8U|Coe+cQBuoTsIHpowYjVbps4=|-----END PRIVATE KEY-----"
-DKIM_SELECTOR="dkimselector"
-ALLOWED_SENDER_DOMAINS="example.org"
-CLOUDFLARE_API_KEY="iTndzksdfjkJHsldkzjenLLDg8Ca7MYx2"
-CLOUDFLARE_ZONE_ID="721d168a07e873d73ec452713fcbb03f"
-CLOUDFLARE_DNS_RECORDS="smtp.example.org"
-POSTFIX_HOSTNAME="smtp.example.org"
-BASIC_AUTH_USER="admin"
-BASIC_AUTH_PWD="latestpassword"
-SMTPD_REPLICAS="2"
-DOLIDOCK_REPLICAS="3"
-```
+- Kubernetes cluster access
+- Helm (for Helm chart deployment)
+- S3-compatible storage (optional, for backups)
+- Cloudflare account (for DKIM and DNS features)
 
-## 1.4. Initializing Dolibarr Database from a File in an S3 Bucket
-
-If you want to initialize the Dolibarr database from a file in an S3 bucket, you need to set the environment variable `DOLI_INIT_FROM_S3=true` in the Dolibarr container.
-
-The `initfrom-s3.sh` script will be executed, which uses the following environment variables:
-
-| Variable | Description | Helm Value Path |
-| --- | --- | --- |
-| `S3_BUCKET` | The name of the S3 bucket where the backup file is located. | `dolidock.s3Bucket` |
-| `S3_ACCESS_KEY` | The access key to access the S3 bucket | `dolidock.s3AccessKey` |
-| `S3_SECRET_KEY` | The secret key to access the S3 bucket. | `dolidock.s3SecretKey` |
-| `S3_ENDPOINT` | The endpoint of the S3 service. | `dolidock.s3Endpoint` |
-| `S3_REGION` | The region of the S3 service. | `dolidock.s3Region` |
-| `S3_PATH` | The path in the S3 bucket where the backup file is located. | `dolidock.s3Path` |
-| `S3_DOLIDOCK_FILE` | The name of the backup file. If this variable is not set, the script will use the most recent file in the specified path. | Not applicable |
-| `CRYPTOKEN` | The password to decrypt the backup file. | `dolidock.s3Cryptoken` |
-| `DOLI_INIT_FROM_S3` | If "true" initialize from S3 | `doliInitFromS3` |
-
-The script first checks if all necessary variables are set. Then, it checks if the `mc` tool (MinIO Client) is installed and if the `s3backup` alias is set. If the alias is not set, the script sets it.
-
-Next, the script creates a backup directory, finds the most recent backup file in the S3 bucket (or uses the file specified by `S3_DOLI_FILE`), copies it to the backup directory, and if the backup file has the `.enc` extension, decrypts it using the password in `CRYPTOKEN` variable.
-
-Finally, the script restores the database from the dump and the filestore from the backup.
-
-## 1.5. Deploy on Okteto
-
-For developping I'm using Okteto free tier.  
-If you have an Okteto account, retrieve the kube config (settings Kubernetes credentials), and if you have all the required environment variables
-|Variable|Sample value|Description|
-|----|----|----|
-|NAMESPACE|oktetons|Kubernetes namespace|
-|FQDN_DOLISTOCK|erp-oketons.cloud.okteto.net|FQDN of the main url|
-|DOLI_ADMIN_LOGIN|administrator|Dolibarr SuperAdmin|
-|DOLI_ADMIN_PASSWORD|strongpassword|SuperAdmin password|
-|DOLI_DB_USER|adbuser|Owner of Dolibarr database|
-|DOLI_DB_PASSWORD|anotherpassword|Dolibarr database user password|
-|DOLI_DB_NAME|dolismo|Database name|
-|MYSQL_ROOT_PASSWORD|averystrongpassword|Mysql root password|
-|DKIM_PRIVATE_KEY|openssl genrsa -out /dev/stdout 2048 \| tr '\n' '\|' \| sed 's/.$//'|DKIM private key with all newline replaced with \||
-|DKIM_SELECTOR|dkimselector|The name of the dkim selector in your dns|
-|ALLOWED_SENDER_DOMAINS|example.org|Allower sender domain|
-|CLOUDFLARE_API_KEY|iTndzksdfjkJHsldkzjenLLDg8Ca7MYx2|Cloudfare API token with DNS Edit right on the dns zone|
-|CLOUDFLARE_ZONE_ID|721d168a07e873d73ec452713fcbb03f|Cloudflare DNS zone ID|
-|CLOUDFLARE_DNS_RECORDS|smtp.example.org|Cloudflare DNS record (must exists)|
-|POSTFIX_HOSTNAME|smtp.example.org|Probably same as CLOUDFLARE_DNS_RECORDS|
-|BASIC_AUTH_USER|admin|Crontab-UI login|
-|BASIC_AUTH_PWD|latestpassword|Crontab-UI password|
-|SMTPD_REPLICAS|2|smtp server number of replicas|
-|DOLIDOCK_REPLICAS|3|Dolibarr number of replicas must be 1 for install and can be any after |  
-
-Remember that replicas must be se to 1 for installation.  
-
-```sh
-envsubst < k8s.yml | kubectl apply --kubeconfig okteto-kube.config -f -
-```
-
-It will deploy a cluster with a web frontend, a [Postfix server with DKIM signing](https://github.com/ismogroup/docker-smtp-relay), an Oracle MySql 8 server, a phpmyadmin web server, a [Dolirate container](https://github.com/ismogroup/dolirate) and a [crontabui server](https://github.com/highcanfly-club/crontab-ui).  
-Ingress hosts are:  
-| URL | Use |  
-| ---------------------------------------- | ---------- |  
-| <https://admin-NAMESPACE.cloud.okteto.net> | phpMyAdmin |  
-| https://FQDN_DOLISTOCK | Dolibarr |  
-| <https://crontabui-$NAMESPACE.cloud.okteto.net> | CrontabUI |  
-
-Note that php sessions are stored in the dolidock-data PVC so sessions are shared across replicas for scalability. It is tested without any problem up to 4 replicas.  
-
-## 1.6. Deploy on other Kubernetes cluster
-
-If you have a valid kube.config you probably just need to adapt the OKETO_NS variable to your namespace.  
-For example Azure Kubernetes needs "default".  
-Also you may need to replace the Ingress in the k8s.yml for adapting to the available Ingress service.  
-
-## 1.7. DKIM key and _domainkey record
-
-for creating the DKIM private key simply generate it with openssl and store it as DKIM_PRIVATE_KEY
-
-```sh
-openssl genrsa -out /dev/stdout 2048 | tr '\n' '|' | sed 's/.$//'
-```
-
-When you have a valid DKIM_PRIVATE_KEY environment variable you can compute your _domainkey record
-
-```sh
-echo $DKIM_PRIVATE_KEY | tr '|' '\n' | openssl rsa -pubout 2> /dev/null | sed -e '1d' -e '$d' | tr -d '\n' | echo "v=DKIM1; h=sha256; k=rsa; s=email; p=$(</dev/stdin)"
-```
-
-## 1.8. SMTPd server
-
-In the Docker docker-compose.yml and the Kubernetes k8s.yml a Postfix server is deployed.  
-It contains a DKIM signer, a DDNS update script for Cloudflare DNS and a Letsencrypt autorenew certificate.  
-For having it runnig you need a [Cloudflare](https://dash.cloudflare.com/login) zone (the free account is sufficient).  
-If you don't own a domain you can find free subdomains on internet accepting Cloudflare as a subdomain dns.  
-While you have a running Cloudflare zone,
-
-- look at your zone id and store it as CLOUDFLARE_ZONE_ID .
-- In Cloudflare overview, page hit [Get your API token](https://dash.cloudflare.com/profile/api-tokens) and issue a token with DNS Edit right on your zone. Store this token as CLOUDFLARE_API_KEY  
-- In the Cloudflare DNS view, create a A record pointing to any IP address (it will be updated automatically) and store the full fqdn record in CLOUDFLARE_DNS_RECORDS  
-- In the Cloudflare DNS view, create a TXT record with name "@"" and value "v=spf1 a:CLOUDFLARE_DNS_RECORDS ~all"
-- In the Cloudflare DNS view, create a TXT record with name "DKIM_SELECTOR._domainkey" and the value you computed previously with your DKIM_PRIVATE_KEY variable
-With that the SMTPd container will check automatically your public ip adress, publish it at Cloudflare. So all outgoing emails will come for a valid MX host (the spf record) and will be signed with a valid dkim key. This is important for spam checking.
-
-## 1.9. Dolirate
-
-If needed a [Dolirate](https://github.com/ismogroup/dolirate) container is deployed.
-Dolirate is a simple Express server, making a GET request to <http://dolirate/updaterates> will automatically fetch the currency exchange rates needed and update Dolibarr.  
-
-## 1.10. Crontab-UI
-
-A custom [Crontab-ui](https://github.com/highcanfly-club/crontab-ui) is deployed.  
-On Okteto the url is <https://crontabui-OKETO_NS.cloud.okteto.net>  
-If needed you can add some cron task inside.  
-For example for updating the needed exchange rates in Dolibarr:
-
-```sh
-/usr/bin/curl http://dolirate:3000/updaterates
-```
-
-## 1.11. PhpMyAdmin
-
-A phpMyAdmin official image is deployed.
-On Okteto the url is <https://admin-OKETO_NS.cloud.okteto.net>  
-you can log in with root and MYSQL_ROOT_PASSWORD
-
-## 1.12. Known issues
-
-I don't know why but the Users and Groups active is not automatically active. Just enable it.  
-Some warnings may appear in the frontend.  
-DOLI_DB_USER may not have RELOAD privilege on database, open a shell to the mysql container and grant it the privilege if needed.
-
-## 1.13. Update
-
-- From a terminal find a dolidock pod name `kubectl --kubeconfig kube.config get pods`
-
-```sh
-NAME                          READY   STATUS    RESTARTS   AGE
-crontabui-d5cb45588-jlbg7     1/1     Running   0          9d
-dolidock-6c4d67c96c-klbr2     1/1     Running   0          9d
-dolidock-6c4d67c96c-ljds7     1/1     Running   0          9d
-dolidock-6c4d67c96c-njnc7     1/1     Running   0          9d
-dolirate-757d6bff67-wc8mp     1/1     Running   0          9d
-memcached-5855c7d6bf-smd24    1/1     Running   0          9d
-mysql-794ff5f6fc-2mwzf        1/1     Running   0          9d
-phpmyadmin-5fd9b8bfcb-l4dkl   1/1     Running   0          9d
-smtpd-7fddb75dcb-s9j79        1/1     Running   0          9d
-```
-
-- connect to the pod terminal `kubectl --kubeconfig kube.config exec -it dolidock-6c4d67c96c-klbr2  -- /bin/bash`
-- remove install.lock `rm /var/www/dolidock/documents/install.lock`
-- restart the cluster and follow the ui
-- at the end if needed reconnect to a pod and create a new install.lock
-
-```sh
-echo "" > /var/www/dolidock/documents/install.lock
-```
-
-A simple `/upgrade-helper.sh` can help
-
-# 2. Helm Chart
+### Quick Start with Helm
 
 ```sh
 helm repo add highcanfly https://helm-repo.highcanfly.club/
 helm repo update
 helm install --create-namespace --namespace=dolidock dolidock highcanfly/dolidock \
-        --values _values.yaml
+        --values your-values.yaml
 ```
+
+Create a `values.yaml` file based on this template:
 
 ```yaml
 dolidock:
-  image: 
-    tag: 19.0.1.0
+  image:
+    tag: 21.0.1.0
   allowedSenderDomains: "example.org"
-  apiLayerKey: pc4d67c96cc4d67c96cTGH5qwbY
-  # cloudflareApiKey: ViCgLwjv4soP55Mn
-  # cloudflareDnsRecords: smtp.example.org
-  # cloudflareZoneId: "E+OstPbqGs26JhgdhJVF"
-  doliAdminPassword: "c4d67c96c"
-  doliDbPassword: "c4d67c96c"
-  mysqlRootPassword: "c4d67c96c"
-  postfixHostname: smtp-example
+  doliAdminPassword: "strong-password"
+  doliDbPassword: "strong-db-password"
+  mysqlRootPassword: "strong-root-password"
   hostname: erp.example.org
   doliUrlRoot: https://erp.example.org
-  adminHostname: admin-erp.example.org
-  crontabuiHostname: crontabui-derp.example.org
-  s3Bucket: "master"
-  s3Path: "random-s3-path"
-  s3Endpoint: "https://random-s3-endpoint.com"
-  s3AccessKey: "random-access-key"
-  s3SecretKey: "random-secret-key"
-  s3Region: "random-region"
-  s3Cryptoken: "random-cryptoken"
-  doliInitFromS3: "false"
+  
+  # Email backup configuration
+  backupFrom: "no-reply@example.org"
+  backupTo: "admin@example.org"
+  autobackupJob: true
+
+  # S3 restoration configuration (optional)
+  s3Bucket: "your-bucket"
+  s3Path: "backup-path"
+  s3Endpoint: "https://your-s3-endpoint"
+  s3AccessKey: "your-access-key"
+  s3SecretKey: "your-secret-key"
+  s3Region: "your-region"
+  s3Cryptoken: "your-encryption-key"
+  doliInitFromS3: "false"  # Set to "true" to restore from S3 on startup
+  
+  # DKIM configuration
   dkimSelector: dkim
-  dkimPrivateKey: "----BEGIN PRIVATE KEY-----|MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEA|rxSPI0KqL9mH2JyWFexZziV3RuE7DIf+IFVPLsrxSrfsZqYOFuBamfPVLVHNx+Ma|dbDPH+KzOc5sMNDkLebWg+qddpTm6Zy0mUACRbFijF1TjPRiwnpEpScGUSS+Cs8U|Coe+cQBuoTsIHpowYjVbps4=|-----END PRIVATE KEY-----"
-mysql:
-  image:
-    repository: mysql
-    tag: 8
-crontabui:
-  enabled: false
-smtpd:
-  useCloudflareDDNS: "0"
-  useLetsEncrypt: "0"
-  relayHost: "[smtp.gmail.com]:587"
-ingress:
-  ingressClassName: nginx
-  tls:
-    enabled: true
-    certIssuer: cert-issuer
-cloudflared:
-  replicaCount: 1
-  autoscaling:
-    enabled: false
-  probe:
-    enabled: true
-  enabled: true
-  image:
-      repository: highcanfly/net-tools
-      tag: 1.2.4
-  TunnelID: your-tunnel-id
-  credentials: {"AccountTag":"your-account-tag","TunnelSecret":"your-tunnel-secret","TunnelID":"your-tunnel-id"}
-  config: |
-    tunnel: your-tunnel-name
-    credentials-file: /etc/cloudflared/creds/credentials.json
-    metrics: 0.0.0.0:2000
-    no-autoupdate: true
-    ingress:
-      - hostname: your-hostname-1
-        service: http://dolidock:80
-      - hostname: your-hostname-2
-        service: http://phpmyadmin
-      - service: http_status:404
-    cert: |
-        -----BEGIN PRIVATE KEY-----
-        your-private-key
-        -----END PRIVATE KEY-----
-        -----BEGIN CERTIFICATE-----
-        your-certificate
-        -----END CERTIFICATE-----
-        -----BEGIN ARGO TUNNEL TOKEN-----
-        your-argo-tunnel-token
-        -----END ARGO TUNNEL TOKEN-----
+  dkimPrivateKey: "----BEGIN PRIVATE KEY-----|your-key-here|-----END PRIVATE KEY-----"
 ```
 
-Okteto can reuse the same PVC, use --set smtpd.useDolidockPVC=true
+### Deploying on Okteto
 
-# 3. Migration Script
+For development environments, Okteto provides a straightforward deployment option:
 
-A bash script that performs various database migration tasks is included in the Docker image. The script provides several functions to manage database schema updates, dump and restore database backups, and open a MySQL shell to the database.
+1. Get your Okteto Kubernetes credentials
+2. Set required environment variables
+3. Deploy using kubectl:
 
-**Available Commands**
-
-* `dumpDatabase [dumpfile.sql]`: Dump the database to a file. If no file name is provided, the default dump file name is `dump.sql`.
-* `restoreDatabase [dumpfile.sql]`: Restore the database from a file. The file can be a `.sql`, `.gz`, `.bz2`, or `.zip` file.
-* `migrateDatabase`: Migrate the database to the current version.
-* `automigrate`: Migrate the database to the current version if required.
-* `mysql_shell`: Open a MySQL shell to the database.
-
-**Usage**
-
-To run the script for migrating the database, execute the following command:
-```
-source /usr/local/bin/migrate2 && automigrate
+```sh
+envsubst < k8s.yml | kubectl apply --kubeconfig okteto-kube.config -f -
 ```
 
+> **Note:** Set DOLIDOCK_REPLICAS=1 for initial installation, then scale up afterward.
 
-**Script Functions**
+### Deploying on Other Kubernetes Clusters
 
-The script includes several functions that can be called directly:
+For other Kubernetes clusters:
 
-* `grantProcess`: Grants the `PROCESS` privilege to the database user.
-* `revokeProcess`: Revokes the `PROCESS` privilege from the database user.
-* `dumpDatabase`: Dumps the database to a file.
-* `restoreDatabase`: Restores the database from a file.
-* `migrateDatabase`: Migrates the database to the current version.
-* `automigrate`: Migrates the database to the current version if required.
+1. Adjust the namespace variable (OKETO_NS) to match your target namespace
+2. Modify the Ingress configuration in k8s.yml to match your cluster's ingress controller
+3. Apply with kubectl using your cluster's configuration
 
-### Local docker build
+## Configuration
 
-This repository was designed to use the [GitHub Actions](.github/workflows/publish-docker-hub.yml) to build and publish the Docker image to Docker Hub. However, you can also build the image locally using the following commands:
+### Environment Variables
+
+Key environment variables and their descriptions:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| DOLI_ADMIN_LOGIN | Dolibarr admin username | administrator |
+| DOLI_ADMIN_PASSWORD | Dolibarr admin password | strongpassword |
+| DOLI_DB_USER | Database username | doliuser |
+| DOLI_DB_PASSWORD | Database password | dbpassword |
+| DOLI_DB_NAME | Database name | dolibarr |
+| MYSQL_ROOT_PASSWORD | MySQL root password | rootpassword |
+| DOLI_INIT_FROM_S3 | Enable init from S3 | true |
+| BACKUPFROM | Email address for backups | <no-reply@example.org> |
+| BACKUPTO | Recipient of backup emails | <admin@example.org> |
+
+### Email Configuration
+
+The integrated email server supports:
+
+1. DKIM signing for improved deliverability
+2. Cloudflare DDNS for SPF record validation
+3. Automatic TLS certificate management via Let's Encrypt
+
+To generate a DKIM key:
+
+```sh
+openssl genrsa -out /dev/stdout 2048 | tr '\n' '|' | sed 's/.$//'
+```
+
+Generate the DNS record value for your _domainkey TXT record:
+
+```sh
+echo $DKIM_PRIVATE_KEY | tr '|' '\n' | openssl rsa -pubout 2> /dev/null | sed -e '1d' -e '$d' | tr -d '\n' | echo "v=DKIM1; h=sha256; k=rsa; s=email; p=$(</dev/stdin)"
+```
+
+### S3 Backup and Restore
+
+To initialize Dolibarr from an S3 backup:
+
+1. Set `DOLI_INIT_FROM_S3=true`
+2. Configure the following variables:
+
+| Variable | Description |
+|----------|-------------|
+| S3_BUCKET | S3 bucket name |
+| S3_ACCESS_KEY | S3 access key |
+| S3_SECRET_KEY | S3 secret key |
+| S3_ENDPOINT | S3 endpoint URL |
+| S3_REGION | S3 region |
+| S3_PATH | Path in bucket |
+| S3_DOLIDOCK_FILE | Specific backup file (optional) |
+| CRYPTOKEN | Decryption password |
+
+The system will automatically find the latest backup file if S3_DOLIDOCK_FILE is not specified.
+
+## Maintenance Operations
+
+### Database Migration
+
+The docker image includes a powerful database migration script with several functions:
+
+```sh
+# Connect to a pod
+kubectl exec -it [pod-name] -- bash
+
+# Load migration functions
+source /usr/local/bin/migrate2
+
+# Available commands:
+dumpDatabase [filename.sql]  # Dump database to file
+restoreDatabase filename.sql  # Restore from SQL file (.sql, .gz, .bz2, .zip)
+migrateDatabase  # Manual migration
+automigrate  # Automatic migration if needed
+mysql_shell  # Open MySQL shell
+```
+
+### Updating Dolibarr
+
+To update an existing installation:
+
+1. Find your pod: `kubectl get pods`
+2. Connect to the pod: `kubectl exec -it dolidock-pod-name -- bash`
+3. Remove the lock file: `rm /var/www/dolidock/documents/install.lock`
+4. Restart the cluster and follow the UI instructions
+5. After updating, recreate the lock file: `echo "" > /var/www/dolidock/documents/install.lock`
+
+A helper script is available: upgrade-helper.sh
+
+### Backup and Restore
+
+Automatic backups can be configured via email or to an S3 bucket. Manual backups can be performed using the migration script:
+
+```sh
+source /usr/local/bin/migrate2 && dumpDatabase my-backup.sql
+```
+
+## Advanced Features
+
+### SMTPd with DKIM Signing
+
+The integrated Postfix server provides:
+
+- DKIM signature for improved email deliverability
+- Automatic DNS updates via Cloudflare API
+- Let's Encrypt certificate integration
+
+Required Cloudflare setup:
+
+1. Create an API token with DNS Edit permissions
+2. Configure A, TXT (SPF), and DKIM records as described in the configuration section
+
+### Dolirate Integration
+
+[Dolirate](https://github.com/ismogroup/dolirate) automatically updates currency exchange rates in Dolibarr. Access via:
+
+```web
+http://dolirate:3000/updaterates
+```
+
+### Crontab-UI
+
+The integrated [Crontab-UI](https://github.com/highcanfly-club/crontab-ui) provides a web interface for managing scheduled tasks:
+
+- URL: <https://crontabui-NAMESPACE.cloud.okteto.net>
+- Default credentials: Set via BASIC_AUTH_USER and BASIC_AUTH_PWD
+
+### PhpMyAdmin Access
+
+Access the database via phpMyAdmin:
+
+- URL: <https://admin-NAMESPACE.cloud.okteto.net>
+- Login with root and MYSQL_ROOT_PASSWORD
+
+## Known Issues
+
+- Users and Groups module may not be automatically active. Enable it manually.
+- Some UI warnings may appear in the frontend.
+- DOLI_DB_USER may need RELOAD privilege granted manually.
+
+## Building Locally
+
+While the repository uses GitHub Actions for builds, you can build locally:
 
 ```sh
 docker login --username=ismogroup
 docker buildx create --use
-docker buildx build --push --platform linux/amd64,linux/arm64 --tag ismogroup/dolidock:20.0.3.0 --tag ismogroup/dolidock:latest  .
+docker buildx build --push --platform linux/amd64,linux/arm64 --tag ismogroup/busybox:1.37.0-php-8.4-apache --tag ismogroup/busybox:latest -f Dockerfile.busybox .
+docker buildx build --push --platform linux/amd64,linux/arm64 --tag ismogroup/dolidock:21.0.1.1 --tag ismogroup/dolidock:latest  .
 ```

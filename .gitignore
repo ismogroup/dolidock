@@ -5,3 +5,4 @@ _values.yaml
 scripts/export-lab.sh
 _sensitive_datas/_sensitive_datas.tar.xz
 sctg-doli-lab.yaml
+private_values.yml
