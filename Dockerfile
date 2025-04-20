@@ -73,6 +73,7 @@ RUN apt-get update -y &&\
     php -r "unlink('composer-setup.php');" &&\
     mv composer.phar /usr/local/bin/composer.phar &&\
     cd plugin-facturx &&\
+    sed -ibak -e 's/patch -p/patch --fuzz=20 -p/' composer.json &&\
     composer.phar install &&\
     echo "DOLIBARR_VERSION = ${DOLIBARR_VERSION}" > Makefile.localvars &&\
     echo "PHPCMD = php" >> Makefile.localvars &&\
