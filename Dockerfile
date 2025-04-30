@@ -63,7 +63,7 @@ RUN cd / && apt-get update -y &&\
 ENV DOLIBARR_VERSION 21.0.1
 RUN apt-get update -y &&\
     apt-get install -y --no-install-recommends curl git libsodium-dev p7zip-full &&\
-    curl -LsS https://github.com/phpstan/phpstan/releases/download/2.1.11/phpstan.phar -o /usr/local/bin/phpstan.phar &&\
+    curl -LsS https://github.com/phpstan/phpstan/releases/download/1.12.15/phpstan.phar -o /usr/local/bin/phpstan.phar &&\
     chmod +x /usr/local/bin/phpstan.phar &&\
     curl -LsS https://github.com/humbug/php-scoper/releases/download/0.18.16/php-scoper.phar -o /usr/local/bin/php-scoper.phar &&\
     chmod +x /usr/local/bin/php-scoper.phar &&\
@@ -78,7 +78,7 @@ RUN apt-get update -y &&\
     echo "DOLIBARR_VERSION = ${DOLIBARR_VERSION}" > Makefile.localvars &&\
     echo "PHPCMD = php" >> Makefile.localvars &&\
     echo "COMPOSERCMD = /usr/local/bin/composer.phar" >> Makefile.localvars &&\
-    echo "PHPSTANCMD = true" >> Makefile.localvars &&\
+    echo "PHPSTANCMD = /usr/local/bin/phpstan.phar" >> Makefile.localvars &&\
     make zip &&\
     cp /tmp/module_facturx-*.zip . &&\
     mkdir -p /custom/htdocs && for ZIP in *.zip; do 7z x -y -o/custom/htdocs $ZIP; done
