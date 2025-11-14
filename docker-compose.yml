@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
     dolidock:
         image: ismogroup/dolidock:latest
@@ -15,6 +13,7 @@ services:
             DOLI_URL_ROOT: 'http://0.0.0.0'
             DOLI_DB_USER: ${DOLI_DB_USER}
             DOLI_DB_PASSWORD: ${DOLI_DB_PASSWORD}
+            PHP_DEBUG: "1"
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
             WWW_USER_ID: 1000
             WWW_GROUP_ID: 1000
@@ -23,14 +22,14 @@ services:
     mysql:
         image: mysql:latest
         environment:
-        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-        - MYSQL_DATABASE=${DOLI_DB_NAME}
-        - MYSQL_USER=${DOLI_DB_USER}
-        - MYSQL_PASSWORD=${DOLI_DB_PASSWORD}
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - MYSQL_DATABASE=${DOLI_DB_NAME}
+            - MYSQL_USER=${DOLI_DB_USER}
+            - MYSQL_PASSWORD=${DOLI_DB_PASSWORD}
         volumes:
-        - mysql-data:/var/lib/mysql
+            - mysql-data:/var/lib/mysql
         ports:
-        - 3306:3306
+            - 3306:3306
         deploy:
             resources:
                 limits:
@@ -47,7 +46,7 @@ services:
             DOLI_DB_NAME: ${DOLI_DB_NAME}
             API_LAYER_KEY: ${API_LAYER_KEY}
         ports:
-        - 3000:3000
+            - 3000:3000
         deploy:
             resources:
                 limits:
@@ -67,7 +66,7 @@ services:
         volumes:
             - dolidock-data:/var/www/dolidock/documents
         ports:
-        - "25"
+            - "25"
         deploy:
             resources:
                 limits:
@@ -77,5 +76,5 @@ services:
         image: memcached:alpine
         command: memcached -m 1024
 volumes:
-  dolidock-data:
-  mysql-data:
+    dolidock-data:
+    mysql-data:

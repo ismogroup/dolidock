@@ -44,13 +44,22 @@ date.timezone = ${PHP_INI_DATE_TIMEZONE}
 sendmail_path = /usr/sbin/sendmail -t -i
 memory_limit = ${PHP_INI_MEMORY_LIMIT}
 EOF
+DOLIBARR_MAIN_PROD="1"
+  if [[ -n ${PHP_DEBUG} ]]; then
+    cat >>${PHP_INI_DIR}/conf.d/dolibarr-php.ini <<EOF
+display_errors = On
+error_reporting = E_ALL
+display_startup_errors = On
+EOF
+  DOLIBARR_MAIN_PROD="0"
+  fi
 
   if [[ ! -f /var/www/dolidock/html/conf/conf.php ]]; then
     UNIQUE_ID=$(echo "$DOLI_URL_ROOT" | sha1sum | cut -d ' ' -f 1)
     echo "[INIT] => update Dolibarr Config ..."
     cat >/var/www/dolidock/html/conf/conf.php <<EOF
 <?php
-\$dolibarr_main_prod="1";
+\$dolibarr_main_prod="${DOLIBARR_MAIN_PROD}";
 \$dolibarr_main_url_root='${DOLI_URL_ROOT}';
 \$dolibarr_main_document_root='/var/www/dolidock/html';
 \$dolibarr_main_url_root_alt='/custom';
