@@ -16,6 +16,7 @@ crontabui:
   replicas: 1
   type: ClusterIP
 dolidock:
+  phpDebug: "1"
   s3Bucket: "master"
   s3Path: "random-s3-path"
   s3Endpoint: "https://random-s3-endpoint.com"

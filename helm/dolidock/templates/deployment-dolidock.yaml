@@ -60,6 +60,10 @@ spec:
           value: {{ .Values.dolidock.doliDbHostPort | quote }}
         - name: DOLI_URL_ROOT
           value: {{ .Values.dolidock.doliUrlRoot }}
+        {{- if or (eq .Values.dolidock.phpDebug "1") (eq .Values.dolidock.phpDebug 1) (eq .Values.dolidock.phpDebug true) }}
+        - name: PHP_DEBUG
+          value: "1"
+        {{- end }}
         - name: WWW_USER_ID
           value: {{ .Values.dolidock.wwwUserId | quote }}
         - name: WWW_GROUP_ID

@@ -33,11 +33,11 @@ spec:
               name: dolistock
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
-        image: {{ .Values.crontabui.crontabui.image.repository }}:{{ .Values.crontabui.crontabui.image.tag | default .Chart.AppVersion }}
+        image: {{ .Values.crontabui.image.repository }}:{{ .Values.crontabui.image.tag | default .Chart.AppVersion }}
         name: crontabui
         ports:
         - containerPort: 8000
-        resources: {{- toYaml .Values.crontabui.crontabui.resources | nindent 10 }}
+        resources: {{- toYaml .Values.crontabui.resources | nindent 10 }}
         securityContext:
           runAsGroup: 0
           runAsUser: 0
