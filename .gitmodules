@@ -1,0 +1,3 @@
+[submodule "plugin-facturx"]
+	path = plugin-facturx
+	url = https://inligit.fr/cap-rel/dolibarr/plugin-facturx.git

@@ -1,0 +1,58 @@
+--- plugin-facturx/class/facturx.class.php	2025-11-14 18:17:11
++++ facturx/class/facturx.class.php	2025-11-14 16:18:50
+@@ -30,6 +30,16 @@
+ namespace custom\facturx;
+ 
+ use Symfony\Component\Validator\ConstraintViolationListInterface;
++use horstoeko\zugferd\ZugferdProfiles;
++use horstoeko\zugferd\ZugferdPdfWriter;
++use horstoeko\zugferd\ZugferdDocumentBuilder;
++use horstoeko\zugferd\ZugferdDocumentValidator;
++use horstoeko\zugferd\ZugferdDocumentPdfBuilder;
++use JMS\Serializer\Handler\HandlerRegistry;
++use JMS\Serializer\EventDispatcher\EventDispatcher;
++use horstoeko\zugferd\codelists\ZugferdInvoiceType;
++use horstoeko\zugferd\entities\en16931\ram\DocumentContextParameterType;
++use horstoeko\zugferd\entities\en16931\udt\IDType;
+ 
+ function debug_string_backtrace()
+ {
+@@ -41,8 +51,10 @@
+ }
+ 
+ $matches  = preg_grep('/Restler\/AutoLoader.php/i', get_included_files());
+-if (count($matches) == 0) {
++if (file_exists(__DIR__ . '/../vendor/scoper-autoload.php')) {
+     require_once __DIR__ . '/../vendor/scoper-autoload.php';
++} elseif (count($matches) == 0) {
++    require_once __DIR__ . '/../vendor/autoload.php';
+ } else {
+     //autoloader compatible with specific dolibarr restler settings...
+     spl_autoload_register(function ($class) {
+@@ -60,7 +72,7 @@
+     }, true, true);
+ }
+ 
+-// require_once __DIR__ . "/../vendor/setasign/fpdf/fpdf.php";
++require_once __DIR__ . "/../vendor/setasign/fpdf/fpdf.php";
+ require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
+ require_once DOL_DOCUMENT_ROOT.'/expedition/class/expedition.class.php';
+ require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
+@@ -70,17 +82,6 @@
+ 
+ dol_include_once('/facturx/lib/facturx.lib.php');
+ 
+-use horstoeko\zugferd\ZugferdProfiles;
+-use horstoeko\zugferd\ZugferdPdfWriter;
+-use horstoeko\zugferd\ZugferdDocumentBuilder;
+-use horstoeko\zugferd\ZugferdDocumentValidator;
+-use horstoeko\zugferd\ZugferdDocumentPdfBuilder;
+-use JMS\Serializer\Handler\HandlerRegistry;
+-use JMS\Serializer\EventDispatcher\EventDispatcher;
+-use horstoeko\zugferd\codelists\ZugferdInvoiceType;
+-use horstoeko\zugferd\entities\en16931\ram\DocumentContextParameterType;
+-use horstoeko\zugferd\entities\en16931\udt\IDType;
+-
+ /**
+  * Class FacturX
+  */

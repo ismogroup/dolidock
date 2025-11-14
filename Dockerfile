@@ -65,10 +65,23 @@ RUN mkdir -p /var/www/dolidock/html/custom && \
     cp -r /tmp/dolibarr-${DOLIBARR_VERSION}/scripts /var/www/
 RUN cd /var/www/dolidock/ && git clone https://github.com/highcanfly-club/DoliMods.git
 COPY makepack-dolibarrmodule.pl /var/www/dolidock/DoliMods/dev/build/makepack-dolibarrmodule.pl
+COPY patches/ /var/www/dolidock/patches/
 RUN cd /var/www/dolidock/DoliMods/dev/build/ &&\
     rm -f makepack-HelloAsso.conf && echo "all" | perl makepack-dolibarrmodule.pl &&\
     mkdir -p /custom && for ZIP in *.zip; do 7z x -y -o/custom $ZIP; done 
-COPY facturx /custom/htdocs/facturx
+COPY plugin-facturx /custom/htdocs/facturx
+RUN mkdir -p /custom/patches && cp /var/www/dolidock/patches/* /custom/patches/
+RUN cd /custom/htdocs/facturx &&\
+    patch -p1 < /custom/patches/facturx_autoload.patch &&\
+    patch -p1 < /custom/patches/actions_facturx_autoload.patch
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&\
+    php composer-setup.php &&\
+    php -r "unlink('composer-setup.php');" &&\
+    mv composer.phar /usr/local/bin/composer.phar &&\
+    cd /custom/htdocs/facturx &&\
+    php /usr/local/bin/composer.phar install
+RUN cd /custom/htdocs/facturx/build &&\
+    /bin/bash ./cleanup_vendor.sh
 
 # Get Dolibarr
 FROM php:8.3-apache-bookworm

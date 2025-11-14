@@ -1,0 +1,21 @@
+--- plugin-facturx/class/actions_facturx.class.php	2025-11-14 18:17:11
++++ facturx/class/actions_facturx.class.php	2025-11-14 16:19:29
+@@ -24,14 +24,16 @@
+  * Put detailed description here.
+  */
+ 
+-// require_once __DIR__ . "/../vendor/setasign/fpdf/fpdf.php";
++require_once __DIR__ . "/../vendor/setasign/fpdf/fpdf.php";
+ require_once DOL_DOCUMENT_ROOT . '/compta/bank/class/account.class.php';
+ dol_include_once('/facturx/lib/facturx.lib.php');
+ dol_include_once('/facturx/class/facturx.class.php');
+ 
+ $matches  = preg_grep('/Restler\/AutoLoader.php/i', get_included_files());
+-if (count($matches) == 0) {
++if (file_exists(__DIR__ . '/../vendor/scoper-autoload.php')) {
+ 	require_once __DIR__ . '/../vendor/scoper-autoload.php';
++} elseif (count($matches) == 0) {
++	require_once __DIR__ . '/../vendor/autoload.php';
+ }
+ 
+ use horstoeko\zugferd\ZugferdProfiles;
