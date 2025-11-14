@@ -1,0 +1,127 @@
+parameters:
+	customRulesetUsed: true
+	level: 2
+	fileExtensions:
+		- php
+	parallel:
+		jobSize: 2
+		maximumNumberOfProcesses: 2
+		minimumNumberOfJobsPerProcess: 2
+	checkAlwaysTrueCheckTypeFunctionCall: true
+	checkAlwaysTrueInstanceof: true
+	checkAlwaysTrueStrictComparison: true
+	checkClassCaseSensitivity: true
+	checkFunctionArgumentTypes: true
+	checkFunctionNameCase: true
+	checkArgumentsPassedByReference: true
+	checkMaybeUndefinedVariables: true
+	checkNullables: false
+	checkThisOnly: true
+	checkUnionTypes: false
+	checkExplicitMixedMissingReturn: false
+	checkPhpDocMissingReturn: false
+	reportMaybes: false
+	reportMaybesInMethodSignatures: false
+	reportStaticMethodSignatures: false
+	polluteScopeWithLoopInitialAssignments: true
+	polluteScopeWithAlwaysIterableForeach: true
+	reportMagicMethods: false
+	reportMagicProperties: false
+	treatPhpDocTypesAsCertain: false
+	# if you want to exclude something, generate the baseline to do that, adding here give the opportunity to add new errors
+	ignoreErrors:
+		- '#Variable \$mysoc might not be define#'
+		- '#Variable \$dolibarr_main_url_root might not be define#'
+		- '#Variable \$hookmanager might not be defined.#'
+		- '#Variable \$user might not be defined.#'
+		- '#Variable \$db might not be defined.#'
+		- '#Variable \$langs might not be defined.#'
+		- '#Variable \$conf might not be defined.#'
+		- '#Undefined variable: \$langs#'
+		- '#Undefined variable: \$user#'
+		- '#Undefined variable: \$db#'
+		- '#Undefined variable: \$conf#'
+		- '#Undefined variable: \$hookmanager#'
+		- '#Undefined variable: \$mysoc#'
+		- '#Undefined variable: \$error#'
+		- '#Undefined variable: \$errors#'
+		- '#Undefined variable: \$form#'
+		- '#Result of function fieldList#'
+		- '#Caught class Stripe#'
+		- '#Function llxHeader invoked with#'
+		- '#Function llxHeaderVierge invoked with#'
+		- '#If condition is always true#'
+		- '#always exists and is not falsy#'
+		- '#has no return type specified#'
+		- '#is always true#'
+		- '#is always fal#'
+		- '#always exists and is not nullable#'
+		- '#PHPDoc tag @return has invalid value#'
+		- '#type has no value type specified in iterable type array#'
+		- '#with no value type specified in iterable type array#'
+		- '#Empty array passed to foreach#'
+		- '#in isset\(\) is not nullable#'
+		- '#Function GET#'
+		- '#Function llx#'
+		- '#Function dol#'
+		- '#class uptosignCore not found#'
+		- '#htmlPrintOnlinePaymentFooter#'
+		- '#.*phan-var#'
+		- '#^Expression "''…" on a separate line does not do anything\.$#'
+	internalErrorsCountLimit: 50
+	cache:
+	    nodesByFileCountMax: 512
+	    nodesByStringCountMax: 512
+	reportUnmatchedIgnoredErrors: false
+	universalObjectCratesClasses:
+		- stdClass
+		- SimpleXMLElement
+	earlyTerminatingMethodCalls: []
+	dynamicConstantNames:
+		- ICONV_IMPL
+		- PHP_VERSION
+		- PHP_MAJOR_VERSION
+		- PHP_MINOR_VERSION
+		- PHP_RELEASE_VERSION
+		- PHP_VERSION_ID
+		- PHP_EXTRA_VERSION
+		- PHP_ZTS
+		- PHP_DEBUG
+		- PHP_MAXPATHLEN
+		- PHP_OS
+		- PHP_OS_FAMILY
+		- PHP_SAPI
+		- PHP_EOL
+		- PHP_INT_MAX
+		- PHP_INT_MIN
+		- PHP_INT_SIZE
+		- PHP_FLOAT_DIG
+		- PHP_FLOAT_EPSILON
+		- PHP_FLOAT_MIN
+		- PHP_FLOAT_MAX
+		- DEFAULT_INCLUDE_PATH
+		- PEAR_INSTALL_DIR
+		- PEAR_EXTENSION_DIR
+		- PHP_EXTENSION_DIR
+		- PHP_PREFIX
+		- PHP_BINDIR
+		- PHP_BINARY
+		- PHP_MANDIR
+		- PHP_LIBDIR
+		- PHP_DATADIR
+		- PHP_SYSCONFDIR
+		- PHP_LOCALSTATEDIR
+		- PHP_CONFIG_FILE_PATH
+		- PHP_CONFIG_FILE_SCAN_DIR
+		- PHP_SHLIB_SUFFIX
+		- PHP_FD_SETSIZE
+	paths:
+		- .
+	excludePaths:
+		analyse:
+			- vendor/*
+			- test/*
+	bootstrapFiles:
+		- .phpstan-bootstrap.php
+	errorFormat: table
+	editorUrl: 'vscodium://file/%%file%%:%%line%%'

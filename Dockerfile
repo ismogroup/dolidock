@@ -13,31 +13,31 @@ ARG TARGETARCH
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 RUN echo "Run for $TARGETARCH" && \
     if [[ "$TARGETARCH" == "amd64" ]] ; then \
-        curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.33-1_all.deb > /tmp/mysql-apt-config_0.8.33-1_all.deb && \
-        DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.33-1_all.deb && \
-        apt-get update -y &&\
-        apt-get install -y --no-install-recommends mysql-client lsb-release wget gnupg ; \
+    curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.33-1_all.deb > /tmp/mysql-apt-config_0.8.33-1_all.deb && \
+    DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.33-1_all.deb && \
+    apt-get update -y &&\
+    apt-get install -y --no-install-recommends mysql-client lsb-release wget gnupg ; \
     else \
-        apt-get update -y &&\
-        apt-get install -y --no-install-recommends default-mysql-client ; \
+    apt-get update -y &&\
+    apt-get install -y --no-install-recommends default-mysql-client ; \
     fi
 
 RUN apt-get update -y \
     && apt-get dist-upgrade -y \
     && apt-get install -y --no-install-recommends \
-        git \
-        libc-client-dev \
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libkrb5-dev \
-        libldap2-dev \
-        libpng-dev \
-        libpq-dev \
-        libxml2-dev \
-        libzip-dev \
-        libbz2-dev \
-        libmemcached-dev \
-        cron 
+    git \
+    libc-client-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libkrb5-dev \
+    libldap2-dev \
+    libpng-dev \
+    libpq-dev \
+    libxml2-dev \
+    libzip-dev \
+    libbz2-dev \
+    libmemcached-dev \
+    cron 
 
 RUN docker-php-ext-install opcache
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -67,27 +67,8 @@ RUN cd /var/www/dolidock/ && git clone https://github.com/highcanfly-club/DoliMo
 COPY makepack-dolibarrmodule.pl /var/www/dolidock/DoliMods/dev/build/makepack-dolibarrmodule.pl
 RUN cd /var/www/dolidock/DoliMods/dev/build/ &&\
     rm -f makepack-HelloAsso.conf && echo "all" | perl makepack-dolibarrmodule.pl &&\
-     mkdir -p /custom && for ZIP in *.zip; do 7z x -y -o/custom $ZIP; done 
-RUN cd /var/www/dolidock/DoliMods/htdocs &&\
-    git clone https://inligit.fr/cap-rel/dolibarr/plugin-facturx.git
-RUN cd /var/www/dolidock/DoliMods/htdocs/plugin-facturx &&\
-    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&\
-    php composer-setup.php &&\
-    php -r "unlink('composer-setup.php');" &&\
-    mv composer.phar /usr/local/bin/composer.phar &&\
-    php /usr/local/bin/composer.phar install &&\
-    curl -LsS https://github.com/humbug/php-scoper/releases/download/0.18.18/php-scoper.phar -o /usr/local/bin/php-scoper.phar &&\
-    #rm -rf /tmp/facturx-scoper && mkdir -p /tmp/facturx-scoper && cp -av . /tmp/facturx-scoper/ &&\
-    php /usr/local/bin/php-scoper.phar add-prefix --output-dir "/tmp/facturx-scoper" --config .scoper.inc.php --force --ansi &&\
-    cd "/tmp/facturx-scoper" && php /usr/local/bin/composer.phar dump-autoload --optimize --classmap-authoritative --ansi &&\
-    cd /var/www/dolidock/DoliMods/htdocs/plugin-facturx &&\
-    cp -av core build "/tmp/facturx-scoper" &&\
-    cd "/tmp/facturx-scoper/build" && ./cleanup_vendor.sh &&\
-    cd "/tmp/facturx-scoper" && php build/buildzip.php && \
-    cp /tmp/module_facturx-*.zip /var/www/dolidock/DoliMods/htdocs/plugin-facturx/ &&\
-    rm -rf /tmp/facturx-scoper &&\
-    cd /var/www/dolidock/DoliMods/htdocs/plugin-facturx/ &&\
-    mkdir -p /custom && for ZIP in *.zip; do 7z x -y -o/custom/htdocs/ $ZIP; done 
+    mkdir -p /custom && for ZIP in *.zip; do 7z x -y -o/custom $ZIP; done 
+COPY facturx /custom/htdocs/facturx
 
 # Get Dolibarr
 FROM php:8.3-apache-bookworm
@@ -127,22 +108,22 @@ ENV PHP_INI_MEMORY_LIMIT 256M
 
 RUN echo "Run for $TARGETARCH" && \
     if [[ "$TARGETARCH" == "amd64" ]] ; then \
-        apt-get update -y \
-        && apt-get dist-upgrade -y \
-        && apt-get install -y --no-install-recommends && \
-        curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.33-1_all.deb > /tmp/mysql-apt-config_0.8.33-1_all.deb && \
-        DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.33-1_all.deb && \
-        apt-get update -y &&\
-        apt-get install -y --no-install-recommends mysql-client lsb-release wget gnupg xz-utils ; \
+    apt-get update -y \
+    && apt-get dist-upgrade -y \
+    && apt-get install -y --no-install-recommends && \
+    curl -fLSs https://repo.mysql.com/mysql-apt-config_0.8.33-1_all.deb > /tmp/mysql-apt-config_0.8.33-1_all.deb && \
+    DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_0.8.33-1_all.deb && \
+    apt-get update -y &&\
+    apt-get install -y --no-install-recommends mysql-client lsb-release wget gnupg xz-utils ; \
     else \
-        apt-get update -y &&\
-        apt-get install -y --no-install-recommends default-mysql-client xz-utils ; \
+    apt-get update -y &&\
+    apt-get install -y --no-install-recommends default-mysql-client xz-utils ; \
     fi
 RUN apt-get update -y \
     && apt-get dist-upgrade -y \
     && apt-get install -y --no-install-recommends \
-        curl cron libzip4 libc-client2007e postgresql-client libpng16-16 \
-        libjpeg62-turbo libfreetype6 vim libmemcached11
+    curl cron libzip4 libc-client2007e postgresql-client libpng16-16 \
+    libjpeg62-turbo libfreetype6 vim libmemcached11
 COPY docker-run.sh /usr/local/bin/
 COPY autobackup /usr/local/bin/
 COPY --chmod=0755 upgrade-helper.sh /upgrade-helper.sh

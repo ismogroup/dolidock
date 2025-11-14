@@ -1,0 +1,71 @@
+# Copyright (C) 2021 Éric Seigne <eric.seigne@cap-rel.fr>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+About = About
+ChorusContractNumber=Market number (CHORUS)
+ChorusIdTooltip=When you pay the invoice on the chorus portal, it will give you a tracking number to indicate here
+ChorusId=Transmission Chorus ID
+ChorusPromiseCode=Commitment number (CHORUS)
+ChorusSeparator=CHORUS
+ChorusServiceCode=Service code (CHORUS)
+FacturxAbout = About Facturx
+FacturxAboutPage = Facturx about page
+FACTURX_CONCAT_BEFORE=Brings together all PDF documents before generating the billing file
+FACTURX_CONCAT_BEFORETooltip=If this option is active, the generated PDF file will carry all other PDF documents related to the object
+facturx_DATABASE = Database type
+facturx_DESCRIPTION = More informations
+FACTURX_DISABLE_CHORUS_EXTRAFIELDS=Disable chorus support
+FACTURX_DISABLE_CHORUS_EXTRAFIELDSTooltip=If you do not work with the french public sector you can deactivate the display of extended fields dedicated for this purpose.
+FacturXDisabled = Disable FacturX
+facturx_DOL_VERSION = dolibarr version
+FACTURX_GLOBAL_TRADECONTACT_DISABLE=Deactivate "DefinedTradeContact" field (BG-6)
+FACTURX_GLOBAL_TRADECONTACT_DISABLETooltip=The "DefinedTradeContact" field (BG-6) adds the invoice author's contact information to the invoice (name, e-mail, telephone number)
+FACTURX_GLOBAL_IDENTIFIER_DISABLE=deactivate globale ID in XML
+FacturXMassActionZip=Create a ZIP with all Factur-X files
+facturx_MOD_NAME = module name
+facturx_MOD_VERSION = module version
+facturx_PHP_VERSION = PHP version
+facturx_SERVER_OS = Server
+FacturxSetup=Configuring the Factur-X module
+FacturxSetupPage=Facturx module configuration page
+facturx_SOC_MAIL = email address
+facturx_SOC_NAME = company name
+FACTURX_SUFFIX_ENABLE = Create a new PDF file with _facturx suffix
+FACTURX_SUFFIX_ENABLETooltip=If this option is active, a PDF file will be created with _facturx as suffix. Example: FA2202-2003_facturx.pdf
+facturxSupportCenter = Support center
+facturxSupportPresentation = Please complete the form below to request technical support from CAP-REL. After analysis by our team, this request may be subject to a quote if it is not a bug in the module covered by your purchase.
+facturx_USER_AGENT = Web browser
+FACTURX_USE_TRIGGERTooltip=This module uses the Dolibarr hook mechanism to add the invoiced metadata to the PDF and allows the passage to display user alert messages in the event of a problem. If you activate this option the hook will be disabled for the benefit of the trigger which cannot display a user message.
+FACTURX_USE_TRIGGER=Use the trigger rather than the hook to transform the PDF into a PDF+billing
+FACTURX_XML_STANDALONE = Make a XML standalone file, not embedded into PDF
+ModuleFacturxDesc = This module adds metadata in Factur-X format to your invoices when creating the PDF file
+FxCheckErrorAddress = Your company address is empty
+FxCheckErrorCountry = Your company country is empty
+FxCheckErrorCustomerAddress = Your customer address is empty
+FxCheckErrorCustomerCountry = Your customer country is not provided
+FxCheckErrorCustomerIDPROF1 = Your customer does not have a pro ID (SIREN)
+FxCheckErrorCustomerIDPROF2 = Your customer does not have a pro ID (SIRET)
+FxCheckErrorCustomerName = Your customer does not have a name
+FxCheckErrorCustomerTown = Your customer does not have an associated city
+FxCheckErrorCustomerVAT = Your customer does not have a VAT number
+FxCheckErrorCustomerZIP = Your customer's postal code is missing
+FxCheckError = FacturX compliance errors:
+FxCheckErrorTown = Your company city is empty
+FxCheckErrorVATnumber = Your VAT number is empty
+FxCheckErrorZIP = Your company's zip code is missing
+ModuleFacturxName = Facturx
+Settings = Settings
+FACTURX_PROFILE = Profile to use
+FxNegativeLine = There is a negative line on your invoice, implemented as a global discount into facturx, please read the <a href="https://doc.cap-rel.fr/en/projet_factur-x/implementation_des_lignes_negatives">documentation</a>.

@@ -1,0 +1,11 @@
+includes:
+	- .phpstan.dist.neon
+parameters:
+	scanDirectories:
+		- /home/gitlab-runner/dolibarr-stubs-all/dolibarr-%env.DOLIBARR_VERSION%/
+	excludePaths:
+		analyse:
+			- /home/gitlab-runner/dolibarr-stubs-all/dolibarr-%env.DOLIBARR_VERSION%/
+	bootstrapFiles:
+		- .phpstan-bootstrap.php
+	tmpDir: /tmp/dolibarr-%env.DOLIBARR_VERSION%

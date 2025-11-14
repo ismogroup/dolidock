@@ -1,0 +1,28 @@
+#!/usr/bin/make
+# makefile for cap-rel projects
+#
+
+.DEFAULT_GOAL := help
+
+help:
+	@echo 'Available commands:'
+	@echo -e 'zip \t\t\t — \t build zip release file'
+
+all:
+
+phpcbf:
+	phpcbf *.php core class/ lib/ admin/ -v
+
+scoper:
+	rm -rf "/tmp/${MODULE}-scoper"
+	${PHPCMD} php-scoper.phar add-prefix --output-dir "/tmp/${MODULE}-scoper" --config .scoper.inc.php --force --ansi
+	(cd "/tmp/${MODULE}-scoper" && ${PHPCMD} ${COMPOSERCMD} dump-autoload --optimize --classmap-authoritative --ansi)
+	# cp .phpstan* "/tmp/${MODULE}-scoper"
+	cp -a core build "/tmp/${MODULE}-scoper"
+	# (cd "/tmp/${MODULE}-scoper" && ${PHPSTANCMD} analyse --error-format gitlab --no-progress -c .phpstan.local.neon --memory-limit 6G)
+
+scoperzip: scoper
+	(cd "/tmp/${MODULE}-scoper/build" && ./cleanup_vendor.sh)
+	(cd "/tmp/${MODULE}-scoper" && ${PHPCMD} build/buildzip.php)
+
+zip: scoperzip

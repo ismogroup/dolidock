@@ -1,0 +1,21 @@
+include:
+  - remote: 'https://inligit.fr/cap-rel/gitlab-caprel-settings/-/raw/master/dolibarr-common.yml'
+
+variables:
+  DOLIBARR_VERSION_PHP73: "14 15 16 17 18"
+  DOLIBARR_VERSION_PHP74: "14 15 16 17 18"
+  DOLIBARR_VERSION_PHP80: "16 17 18 19 20"
+  DOLIBARR_VERSION_PHP81: "16 17 18 19 20"
+  DOLIBARR_VERSION_PHP82: "17 18 19 20"
+
+stages:
+  - prepare-php
+  - prepare-dolibarr
+  - phpstan
+  - buildzip
+
+cache:
+  paths:
+    - .tmp/
+    - vendor/
+

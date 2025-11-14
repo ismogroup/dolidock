@@ -1,0 +1,49 @@
+{
+    "name": "modules/facturx",
+    "type": "dolibarr-module",
+    "version": "1.6.8",
+    "homepage": "https://cap-rel.fr/",
+    "readme": "README.md",
+    "license": "GPL-3.0-or-later",
+    "config": {
+        "prepend-autoloader": false,
+        "optimize-autoloader": false,
+        "classmap-authoritative": false,
+        "apcu-autoloader": false,
+        "allow-plugins": {
+            "barryvdh/composer-cleanup-plugin": true
+        }
+        },
+    "authors": [
+        {
+            "name": "Eric Seigne",
+            "email": "eric.seigne@cap-rel.fr",
+            "homepage": "https://www.cap-rel.fr",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "sav@cap-rel.fr",
+        "issues": "https://cap-rel.fr/sav-module-dolibarr/",
+        "docs": "https://doc.cap-rel.fr/projet_factur-x/accueil"
+    },
+    "funding": [
+        {
+            "type": "other",
+            "url": "https://cap-rel.fr/services/soutien-rd/"
+        }
+    ],
+    "require": {
+        "setasign/fpdi": "^2.6",
+        "setasign/fpdf": "^1.8.6",
+        "horstoeko/zugferd": "^1.0",
+        "tebru/doctrine-annotation-reader": "^0.3.7"
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "patch -p2 -N < collision_fpdf.patch || true",
+            "patch -p0 -N < fpdipdfparser.patch || true",
+            "patch -p0 -N < zugferd.patch || true"
+        ]
+    }
+}
