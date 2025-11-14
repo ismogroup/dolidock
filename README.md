@@ -291,5 +291,5 @@ While the repository uses GitHub Actions for builds, you can build locally:
 docker login --username=ismogroup
 docker buildx create --use
 docker buildx build --push --platform linux/amd64,linux/arm64 --tag ismogroup/busybox:1.37.0-php-8.3-apache --tag ismogroup/busybox:latest -f Dockerfile.busybox .
-docker buildx build --push --platform linux/amd64,linux/arm64 --tag ismogroup/dolidock:22.0.2.2 --tag ismogroup/dolidock:latest  .
+docker buildx build --push --platform linux/amd64,linux/arm64 --tag ismogroup/dolidock:22.0.2.3 --tag ismogroup/dolidock:latest  .
 ```
