@@ -8,7 +8,7 @@
 # RUN cd /busybox-1.37.0/ && make install
 FROM  ismogroup/busybox:1.37.0-php-8.3-apache AS busyboxbuilder
 
-FROM php:8.3-apache AS builder
+FROM php:8.3-apache-bookworm AS builder
 ARG TARGETARCH
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 RUN echo "Run for $TARGETARCH" && \
@@ -55,42 +55,47 @@ RUN mkdir -p /usr/src/php/ext/memcached && \
     && rm -rf /usr/src/php/ext/memcached \
     && mv ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini \
     && rm -rf /var/lib/apt/lists/*
+ENV DOLIBARR_VERSION=22.0.2
 RUN cd / && apt-get update -y &&\
-    apt-get install -y --no-install-recommends p7zip-full &&\
-    git clone https://github.com/highcanfly-club/DoliMods.git && \
-    cd /DoliMods/dev/build && rm -f makepack-HelloAsso.conf && echo "all" | perl makepack-dolibarrmodule.pl && \
-    mkdir -p /custom && for ZIP in *.zip; do 7z x -y -o/custom $ZIP; done
-ENV DOLIBARR_VERSION 21.0.1
-RUN apt-get update -y &&\
-    apt-get install -y --no-install-recommends curl git libsodium-dev p7zip-full &&\
-    curl -LsS https://github.com/phpstan/phpstan/releases/download/1.12.15/phpstan.phar -o /usr/local/bin/phpstan.phar &&\
-    chmod +x /usr/local/bin/phpstan.phar &&\
-    curl -LsS https://github.com/humbug/php-scoper/releases/download/0.18.16/php-scoper.phar -o /usr/local/bin/php-scoper.phar &&\
-    chmod +x /usr/local/bin/php-scoper.phar &&\
-    git clone https://inligit.fr/cap-rel/dolibarr/plugin-facturx.git &&\
+    apt-get install -y --no-install-recommends p7zip-full libsodium-dev
+RUN mkdir -p /var/www/dolidock/html/custom && \
+    curl -fLSs https://sourceforge.net/projects/dolibarr/files/Dolibarr%20ERP-CRM/${DOLIBARR_VERSION}/dolibarr-${DOLIBARR_VERSION}.tgz/download  |\
+    tar -C /tmp -xz && \
+    cp -r /tmp/dolibarr-${DOLIBARR_VERSION}/htdocs/* /var/www/dolidock/html/ && \
+    cp -r /tmp/dolibarr-${DOLIBARR_VERSION}/scripts /var/www/
+RUN cd /var/www/dolidock/ && git clone https://github.com/highcanfly-club/DoliMods.git
+COPY makepack-dolibarrmodule.pl /var/www/dolidock/DoliMods/dev/build/makepack-dolibarrmodule.pl
+RUN cd /var/www/dolidock/DoliMods/dev/build/ &&\
+    rm -f makepack-HelloAsso.conf && echo "all" | perl makepack-dolibarrmodule.pl &&\
+     mkdir -p /custom && for ZIP in *.zip; do 7z x -y -o/custom $ZIP; done 
+RUN cd /var/www/dolidock/DoliMods/htdocs &&\
+    git clone https://inligit.fr/cap-rel/dolibarr/plugin-facturx.git
+RUN cd /var/www/dolidock/DoliMods/htdocs/plugin-facturx &&\
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&\
     php composer-setup.php &&\
     php -r "unlink('composer-setup.php');" &&\
     mv composer.phar /usr/local/bin/composer.phar &&\
-    cd plugin-facturx &&\
-    sed -ibak -e 's/patch -p/patch --fuzz=20 -p/' composer.json &&\
-    composer.phar install &&\
-    echo "DOLIBARR_VERSION = ${DOLIBARR_VERSION}" > Makefile.localvars &&\
-    echo "PHPCMD = php" >> Makefile.localvars &&\
-    echo "COMPOSERCMD = /usr/local/bin/composer.phar" >> Makefile.localvars &&\
-    echo "PHPSTANCMD = /usr/local/bin/phpstan.phar" >> Makefile.localvars &&\
-    make zip &&\
-    cp /tmp/module_facturx-*.zip . &&\
-    mkdir -p /custom/htdocs && for ZIP in *.zip; do 7z x -y -o/custom/htdocs $ZIP; done
-
+    php /usr/local/bin/composer.phar install &&\
+    curl -LsS https://github.com/humbug/php-scoper/releases/download/0.18.18/php-scoper.phar -o /usr/local/bin/php-scoper.phar &&\
+    #rm -rf /tmp/facturx-scoper && mkdir -p /tmp/facturx-scoper && cp -av . /tmp/facturx-scoper/ &&\
+    php /usr/local/bin/php-scoper.phar add-prefix --output-dir "/tmp/facturx-scoper" --config .scoper.inc.php --force --ansi &&\
+    cd "/tmp/facturx-scoper" && php /usr/local/bin/composer.phar dump-autoload --optimize --classmap-authoritative --ansi &&\
+    cd /var/www/dolidock/DoliMods/htdocs/plugin-facturx &&\
+    cp -av core build "/tmp/facturx-scoper" &&\
+    cd "/tmp/facturx-scoper/build" && ./cleanup_vendor.sh &&\
+    cd "/tmp/facturx-scoper" && php build/buildzip.php && \
+    cp /tmp/module_facturx-*.zip /var/www/dolidock/DoliMods/htdocs/plugin-facturx/ &&\
+    rm -rf /tmp/facturx-scoper &&\
+    cd /var/www/dolidock/DoliMods/htdocs/plugin-facturx/ &&\
+    mkdir -p /custom && for ZIP in *.zip; do 7z x -y -o/custom/htdocs/ $ZIP; done 
 
 # Get Dolibarr
-FROM php:8.3-apache
+FROM php:8.3-apache-bookworm
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
 COPY --from=busyboxbuilder /busybox-1.37.0/_install/bin/busybox /bin/busybox
-ENV DOLI_VERSION 21.0.1
+ENV DOLI_VERSION 22.0.2
 ENV DOLI_INSTALL_AUTO 1
 
 ENV DOLI_DB_TYPE mysqli
