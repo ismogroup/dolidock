@@ -55,7 +55,7 @@ RUN mkdir -p /usr/src/php/ext/memcached && \
     && rm -rf /usr/src/php/ext/memcached \
     && mv ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini \
     && rm -rf /var/lib/apt/lists/*
-ENV DOLIBARR_VERSION=22.0.2
+ENV DOLIBARR_VERSION=22.0.4
 RUN cd / && apt-get update -y &&\
     apt-get install -y --no-install-recommends p7zip-full libsodium-dev
 RUN mkdir -p /var/www/dolidock/html/custom && \
@@ -89,7 +89,7 @@ LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
 COPY --from=busyboxbuilder /busybox-1.37.0/_install/bin/busybox /bin/busybox
-ENV DOLI_VERSION 22.0.2
+ENV DOLI_VERSION 22.0.4
 ENV DOLI_INSTALL_AUTO 1
 
 ENV DOLI_DB_TYPE mysqli
