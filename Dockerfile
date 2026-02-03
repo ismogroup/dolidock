@@ -55,11 +55,11 @@ RUN mkdir -p /usr/src/php/ext/memcached && \
     && rm -rf /usr/src/php/ext/memcached \
     && mv ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini \
     && rm -rf /var/lib/apt/lists/*
-ENV DOLIBARR_VERSION=22.0.4
+ENV DOLIBARR_VERSION=22.0.2
 RUN cd / && apt-get update -y &&\
     apt-get install -y --no-install-recommends p7zip-full libsodium-dev
 RUN mkdir -p /var/www/dolidock/html/custom && \
-    curl -fLSs https://github.com/Dolibarr/dolibarr/archive/refs/tags/${DOLIBARR_VERSION}.tar.gz  |\
+    curl -fLSs https://sourceforge.net/projects/dolibarr/files/Dolibarr%20ERP-CRM/${DOLIBARR_VERSION}/dolibarr-${DOLIBARR_VERSION}.tgz/download  |\
     tar -C /tmp -xz && \
     cp -r /tmp/dolibarr-${DOLIBARR_VERSION}/htdocs/* /var/www/dolidock/html/ && \
     cp -r /tmp/dolibarr-${DOLIBARR_VERSION}/scripts /var/www/
@@ -89,7 +89,7 @@ LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
 COPY --from=busyboxbuilder /busybox-1.37.0/_install/bin/busybox /bin/busybox
-ENV DOLI_VERSION 22.0.4
+ENV DOLI_VERSION 22.0.2
 ENV DOLI_INSTALL_AUTO 1
 
 ENV DOLI_DB_TYPE mysqli
@@ -142,7 +142,7 @@ COPY autobackup /usr/local/bin/
 COPY --chmod=0755 upgrade-helper.sh /upgrade-helper.sh
 RUN mkdir -p /var/www/dolidock/html/custom && \
     # curl -fLSs https://github.com/Dolibarr/dolibarr/archive/${DOLI_VERSION}.tar.gz |\
-    curl -fLSs https://github.com/Dolibarr/dolibarr/archive/refs/tags/${DOLI_VERSION}.tar.gz  |\
+    curl -fLSs https://sourceforge.net/projects/dolibarr/files/Dolibarr%20ERP-CRM/${DOLI_VERSION}/dolibarr-${DOLI_VERSION}.tgz/download  |\
     tar -C /tmp -xz && \
     cp -r /tmp/dolibarr-${DOLI_VERSION}/htdocs/* /var/www/dolidock/html/ && \
     cp -r /tmp/dolibarr-${DOLI_VERSION}/scripts /var/www/ && \

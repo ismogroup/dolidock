@@ -1,5 +1,5 @@
---- plugin-facturx/class/facturx.class.php.orig	2026-02-03 12:12:34
-+++ plugin-facturx/class/facturx.class.php	2026-02-03 14:19:21
+--- plugin-facturx/class/facturx.class.php	2025-11-14 18:17:11
++++ facturx/class/facturx.class.php	2025-11-14 16:18:50
 @@ -30,6 +30,16 @@
  namespace custom\facturx;
  
@@ -17,33 +17,31 @@
  
  function debug_string_backtrace()
  {
-@@ -44,20 +54,7 @@
- if (count($matches) == 0) {
- 	require_once __DIR__ . '/../vendor/scoper-autoload.php';
- } else {
--	//autoloader compatible with specific dolibarr restler settings...
--	spl_autoload_register(function ($class) {
--		dol_syslog("use spl_autoload A from FacturX for $class");
--		$list = include __DIR__ . '/../vendor/composer/autoload_classmap.php';
--		$fileToLoad = $list[$class];
--		// if($class == "custom\\facturx\\setasign\\FpdiPdfParser\\PdfParser\\PdfParser") {
--		// 	dol_syslog("FacturX spl_autoload for " . $class . " -> " . $fileToLoad);
--		// 	dol_syslog(debug_string_backtrace());
--		// 	exit;
--		// }
--		if ($fileToLoad != "" && file_exists($fileToLoad)) {
--			require_once $fileToLoad;
--		}
--	}, true, true);
-+    require_once __DIR__ . '/../vendor/autoload.php';
+@@ -41,8 +51,10 @@
  }
  
- // require_once __DIR__ . "/../vendor/setasign/fpdf/fpdf.php";
-@@ -69,18 +66,6 @@
- include_once DOL_DOCUMENT_ROOT . '/core/class/discount.class.php';
+ $matches  = preg_grep('/Restler\/AutoLoader.php/i', get_included_files());
+-if (count($matches) == 0) {
++if (file_exists(__DIR__ . '/../vendor/scoper-autoload.php')) {
+     require_once __DIR__ . '/../vendor/scoper-autoload.php';
++} elseif (count($matches) == 0) {
++    require_once __DIR__ . '/../vendor/autoload.php';
+ } else {
+     //autoloader compatible with specific dolibarr restler settings...
+     spl_autoload_register(function ($class) {
+@@ -60,7 +72,7 @@
+     }, true, true);
+ }
+ 
+-// require_once __DIR__ . "/../vendor/setasign/fpdf/fpdf.php";
++require_once __DIR__ . "/../vendor/setasign/fpdf/fpdf.php";
+ require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
+ require_once DOL_DOCUMENT_ROOT.'/expedition/class/expedition.class.php';
+ require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
+@@ -70,17 +82,6 @@
  
  dol_include_once('/facturx/lib/facturx.lib.php');
--
+ 
 -use horstoeko\zugferd\ZugferdProfiles;
 -use horstoeko\zugferd\ZugferdPdfWriter;
 -use horstoeko\zugferd\ZugferdDocumentBuilder;
@@ -52,9 +50,9 @@
 -use JMS\Serializer\Handler\HandlerRegistry;
 -use JMS\Serializer\EventDispatcher\EventDispatcher;
 -use horstoeko\zugferd\codelists\ZugferdInvoiceType;
--use horstoeko\zugferd\codelists\ZugferdElectronicAddressScheme;
 -use horstoeko\zugferd\entities\en16931\ram\DocumentContextParameterType;
 -use horstoeko\zugferd\entities\en16931\udt\IDType;
- 
+-
  /**
   * Class FacturX
+  */
