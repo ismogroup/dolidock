@@ -89,7 +89,7 @@ LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
 COPY --from=busyboxbuilder /busybox-1.37.0/_install/bin/busybox /bin/busybox
-ENV DOLI_VERSION 22.0.4
+ENV DOLI_VERSION 22.0.5
 ENV DOLI_INSTALL_AUTO 1
 
 ENV DOLI_DB_TYPE mysqli
@@ -141,8 +141,8 @@ COPY docker-run.sh /usr/local/bin/
 COPY autobackup /usr/local/bin/
 COPY --chmod=0755 upgrade-helper.sh /upgrade-helper.sh
 RUN mkdir -p /var/www/dolidock/html/custom && \
-    # curl -fLSs https://github.com/Dolibarr/dolibarr/archive/${DOLI_VERSION}.tar.gz |\
-    curl -fLSs https://sourceforge.net/projects/dolibarr/files/Dolibarr%20ERP-CRM/${DOLI_VERSION}/dolibarr-${DOLI_VERSION}.tgz/download  |\
+    curl -fLSs https://github.com/Dolibarr/dolibarr/archive/${DOLI_VERSION}.tar.gz |\
+    # curl -fLSs https://sourceforge.net/projects/dolibarr/files/Dolibarr%20ERP-CRM/${DOLI_VERSION}/dolibarr-${DOLI_VERSION}.tgz/download  |\
     tar -C /tmp -xz && \
     cp -r /tmp/dolibarr-${DOLI_VERSION}/htdocs/* /var/www/dolidock/html/ && \
     cp -r /tmp/dolibarr-${DOLI_VERSION}/scripts /var/www/ && \
@@ -175,7 +175,7 @@ RUN cd /var/www/dolidock/ &&\
     #patch --fuzz=12 -p0 < bug-margin-pdf.diff &&\
     rm -f *.diff
 COPY --from=builder /custom/htdocs /var/www/dolidock/html/custom/
-RUN curl -L https://dl.min.io/client/mc/release/linux-$(dpkg --print-architecture)/mc > /usr/local/bin/mc && chmod +x /usr/local/bin/mc
+RUN curl -L https://dl.min.io/aistor/mc/release/linux-$(dpkg --print-architecture)/mc.RELEASE.2026-09-19T15-24-59Z > /usr/local/bin/mc && chmod +x /usr/local/bin/mc
 COPY --chmod=0755 scripts/initfrom-s3.sh /usr/local/bin/initfrom-s3
 COPY --chmod=0755 migrate2.sh /usr/local/bin/migrate2
 RUN echo ". /usr/local/bin/migrate2" >> /root/.bashrc &&\
