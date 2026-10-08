@@ -6,8 +6,8 @@
 #     && cd /busybox-1.37.0/
 # COPY busybox.config /busybox-1.37.0/.config
 # RUN cd /busybox-1.37.0/ && make install
-# Version de Dolibarr à construire (docker build --build-arg DOLI_VERSION=24.0.1) et révision du module einvoicing.
-ARG DOLI_VERSION=24.0.1
+# Version de Dolibarr à construire (docker build --build-arg DOLI_VERSION=24.0.2) et révision du module einvoicing.
+ARG DOLI_VERSION=24.0.2
 # Dolibarr/dolibarr-community-modules : module EInvoicing (facturation électronique, connecteur « Plateforme Agréée »).
 # Épinglé sur un commit pour des constructions reproductibles ; module 1.3.0 au 2026-10-08.
 ARG EINVOICING_REF=cf915aa83a8d22bf7eefbdea024277968345d943
