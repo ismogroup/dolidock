@@ -6,10 +6,17 @@
 #     && cd /busybox-1.37.0/
 # COPY busybox.config /busybox-1.37.0/.config
 # RUN cd /busybox-1.37.0/ && make install
+# Version de Dolibarr à construire (docker build --build-arg DOLI_VERSION=24.0.1) et révision du module einvoicing.
+ARG DOLI_VERSION=24.0.1
+# Dolibarr/dolibarr-community-modules : module EInvoicing (facturation électronique, connecteur « Plateforme Agréée »).
+# Épinglé sur un commit pour des constructions reproductibles ; module 1.3.0 au 2026-10-08.
+ARG EINVOICING_REF=cf915aa83a8d22bf7eefbdea024277968345d943
 FROM  ismogroup/busybox:1.37.0-php-8.3-apache AS busyboxbuilder
 
 FROM php:8.3-apache-bookworm AS builder
 ARG TARGETARCH
+ARG DOLI_VERSION
+ARG EINVOICING_REF
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 RUN echo "Run for $TARGETARCH" && \
     if [[ "$TARGETARCH" == "amd64" ]] ; then \
@@ -55,41 +62,37 @@ RUN mkdir -p /usr/src/php/ext/memcached && \
     && rm -rf /usr/src/php/ext/memcached \
     && mv ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini \
     && rm -rf /var/lib/apt/lists/*
-ENV DOLIBARR_VERSION=22.0.4
+ENV DOLIBARR_VERSION=${DOLI_VERSION}
 RUN cd / && apt-get update -y &&\
     apt-get install -y --no-install-recommends p7zip-full libsodium-dev
 RUN mkdir -p /var/www/dolidock/html/custom && \
-    curl -fLSs https://sourceforge.net/projects/dolibarr/files/Dolibarr%20ERP-CRM/${DOLIBARR_VERSION}/dolibarr-${DOLIBARR_VERSION}.tgz/download  |\
+    curl -fLSs https://github.com/Dolibarr/dolibarr/archive/${DOLIBARR_VERSION}.tar.gz |\
     tar -C /tmp -xz && \
     cp -r /tmp/dolibarr-${DOLIBARR_VERSION}/htdocs/* /var/www/dolidock/html/ && \
     cp -r /tmp/dolibarr-${DOLIBARR_VERSION}/scripts /var/www/
 RUN cd /var/www/dolidock/ && git clone https://github.com/highcanfly-club/DoliMods.git
 COPY makepack-dolibarrmodule.pl /var/www/dolidock/DoliMods/dev/build/makepack-dolibarrmodule.pl
-COPY patches/ /var/www/dolidock/patches/
 RUN cd /var/www/dolidock/DoliMods/dev/build/ &&\
     rm -f makepack-HelloAsso.conf && echo "all" | perl makepack-dolibarrmodule.pl &&\
     mkdir -p /custom && for ZIP in *.zip; do 7z x -y -o/custom $ZIP; done 
-COPY plugin-facturx /custom/htdocs/facturx
-RUN mkdir -p /custom/patches && cp /var/www/dolidock/patches/* /custom/patches/
-RUN cd /custom/htdocs/facturx &&\
-    patch -p1 < /custom/patches/facturx_autoload.patch &&\
-    patch -p1 < /custom/patches/actions_facturx_autoload.patch
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&\
-    php composer-setup.php &&\
-    php -r "unlink('composer-setup.php');" &&\
-    mv composer.phar /usr/local/bin/composer.phar &&\
-    cd /custom/htdocs/facturx &&\
-    php /usr/local/bin/composer.phar install
-RUN cd /custom/htdocs/facturx/build &&\
-    /bin/bash ./cleanup_vendor.sh
+# Module EInvoicing (remplace l'ancien plugin Factur-X de cap-rel, devenu obsolète : voir
+# https://wiki.dolibarr.org/index.php/Module_EInvoicing_(Generic,_FR,_...) ). Installé dans custom/einvoicing.
+# NB : après chaque montée de version du module, le désactiver puis le réactiver dans Dolibarr (migration de ses données).
+RUN mkdir -p /custom/htdocs/einvoicing /tmp/dcm && cd /tmp/dcm && git init -q . \
+    && git fetch -q --depth 1 https://github.com/Dolibarr/dolibarr-community-modules.git ${EINVOICING_REF} \
+    && git checkout -q FETCH_HEAD \
+    && cp -pr einvoicing/* /custom/htdocs/einvoicing/ \
+    && rm -rf /tmp/dcm
 
 # Get Dolibarr
 FROM php:8.3-apache-bookworm
+ARG DOLI_VERSION
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
+LABEL org.opencontainers.image.version="${DOLI_VERSION}"
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions/
 COPY --from=busyboxbuilder /busybox-1.37.0/_install/bin/busybox /bin/busybox
-ENV DOLI_VERSION 22.0.5
+ENV DOLI_VERSION=${DOLI_VERSION}
 ENV DOLI_INSTALL_AUTO 1
 
 ENV DOLI_DB_TYPE mysqli
@@ -161,19 +164,11 @@ RUN a2dissite 000-default &&\
     echo "php_value session.save_path /var/www/dolidock/documents/sessions" >> /etc/apache2/sites-available/dolibarr.conf &&\
     echo "</VirtualHost>" >> /etc/apache2/sites-available/dolibarr.conf &&\
     a2ensite dolibarr
-#COPY patchs/fileconf-enable-dot-in-db-name.diff /var/www/dolidock/
-COPY patchs/bug-mod-user-unavailable.diff /var/www/dolidock/
-COPY patchs/pgsql-enable-ssl.diff /var/www/dolidock/
-#COPY patchs/bug-fk-soc-tier.diff /var/www/dolidock/
-COPY patchs/bug-margin-pdf.diff /var/www/dolidock/
-COPY patchs/bug-saphir.diff /var/www/dolidock/
-RUN cd /var/www/dolidock/ &&\
-    #patch --fuzz=12 -p0 < fileconf-enable-dot-in-db-name.diff &&\
-    patch --fuzz=12 -p0 < bug-mod-user-unavailable.diff &&\
-    patch --fuzz=12 -p0 < pgsql-enable-ssl.diff &&\
-    #patch --fuzz=12 -p0 < bug-fk-soc-tier.diff &&\
-    #patch --fuzz=12 -p0 < bug-margin-pdf.diff &&\
-    rm -f *.diff
+# Patches (dossier patchs/) NON appliqués depuis Dolibarr 24 :
+#  - bug-mod-user-unavailable.diff : contournement de 2023 (module Utilisateur désactivable) ; non nécessaire/ risqué en 24.
+#  - pgsql-enable-ssl.diff : le remplacement est mal formé (« dsslmode=require bname=... ») et ne concerne que PostgreSQL (socket local).
+#  - bug-margin-pdf.diff, bug-saphir.diff, bug-fk-soc-tier.diff : déjà désactivés ou sans objet.
+# Les fichiers restent dans patchs/ ; réactiver au cas par cas en vérifiant qu'ils s'appliquent sans fuzz.
 COPY --from=builder /custom/htdocs /var/www/dolidock/html/custom/
 RUN curl -L https://dl.min.io/aistor/mc/release/linux-$(dpkg --print-architecture)/mc.RELEASE.2026-09-19T15-24-59Z > /usr/local/bin/mc && chmod +x /usr/local/bin/mc
 COPY --chmod=0755 scripts/initfrom-s3.sh /usr/local/bin/initfrom-s3

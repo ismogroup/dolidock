@@ -174,6 +174,73 @@ function migrateDatabase() {
 }
 
 ########################
+# Run upgrade.php / upgrade2.php / step5.php from an install directory
+# Arguments: $1 install dir, $2 from version, $3 to version
+# Returns: 0 on success
+function _runUpgradeScripts() {
+    local DIR=$1 FROM=$2 TO=$3 rc=0
+    pushd "$DIR" >/dev/null
+    for step in upgrade upgrade2 step5; do
+        echo "=== ${step}.php ${FROM} ${TO}"
+        php ${step}.php ${FROM} ${TO} 2>&1 | tee -a $WORKDIR/documents/migration_error.html | sed -e 's/<[^>]*>//g' -e '/^<!--.*$/d' -e '/^.*-->$/d' -e '/^$/d' | tail -n 3
+        rc=${PIPESTATUS[0]}
+        if [[ ${rc} -ne 0 ]]; then
+            popd >/dev/null
+            return ${rc}
+        fi
+    done
+    popd >/dev/null
+    return 0
+}
+
+########################
+# Migrate through intermediate major versions that are NOT in this image (Dolibarr must be upgraded one
+# major version at a time: 22 -> 23 -> 24). For each tag given, the official tarball is downloaded, run
+# with a copy of conf.php, then the image's own version is applied (migrateDatabase). The database is
+# dumped first and restored if any step fails.
+# Usage: migrateStepwise 23.0.4        (image = 24.x : 22.x -> 23.0.0 -> 24.0.0)
+#        migrateStepwise 23.0.4 24.0.2 (several intermediate tags, in order)
+function migrateStepwise() {
+    if [[ $# -lt 1 ]]; then
+        echo "Usage: migrateStepwise <intermediate-tag> [<intermediate-tag> ...]  (ex: migrateStepwise 23.0.4)"
+        return 1
+    fi
+    local SAFE=pre-stepwise-$(date +%Y%m%d-%H%M%S).sql
+    dumpDatabase ${SAFE} || return $?
+    echo "Safety dump: $WORKDIR/documents/${SAFE}"
+    echo "" >$WORKDIR/documents/migration_error.html
+    local TAG TO FROM TREE
+    for TAG in "$@"; do
+        TO="$(echo ${TAG} | cut -d. -f1).$(echo ${TAG} | cut -d. -f2).0"
+        FROM=$(mysql -N -u ${DOLI_DB_USER} -p${DOLI_DB_PASSWORD} -h ${DOLI_DB_HOST} -P ${DOLI_DB_HOST_PORT} ${DOLI_DB_NAME} -e "SELECT Q.LAST_INSTALLED_VERSION FROM (SELECT INET_ATON(CONCAT(value, REPEAT('.0', 3 - CHAR_LENGTH(value) + CHAR_LENGTH(REPLACE(value, '.', ''))))) as VERSION_ATON, value as LAST_INSTALLED_VERSION FROM llx_const WHERE name IN ('MAIN_VERSION_LAST_INSTALL', 'MAIN_VERSION_LAST_UPGRADE') and entity=0) Q ORDER BY VERSION_ATON DESC LIMIT 1")
+        if ! version_gt ${TO} ${FROM}; then
+            echo "Step ${TAG}: database already at ${FROM}, nothing to do."
+            continue
+        fi
+        echo "##### Intermediate step: ${FROM} -> ${TO} with Dolibarr ${TAG}"
+        TREE=/tmp/code-${TAG}
+        rm -rf ${TREE} && mkdir -p ${TREE} || return 1
+        if ! curl -fLsS https://github.com/Dolibarr/dolibarr/archive/${TAG}.tar.gz | tar -C ${TREE} -xz; then
+            echo "Download of Dolibarr ${TAG} failed ... Aborting (database untouched)."
+            return 1
+        fi
+        cp $WORKDIR/html/conf/conf.php ${TREE}/dolibarr-${TAG}/htdocs/conf/conf.php
+        sed -i "s#'$WORKDIR/html'#'${TREE}/dolibarr-${TAG}/htdocs'#" ${TREE}/dolibarr-${TAG}/htdocs/conf/conf.php
+        rm -f $WORKDIR/documents/install.lock
+        _runUpgradeScripts ${TREE}/dolibarr-${TAG}/htdocs/install ${FROM} ${TO}
+        if [[ $? -ne 0 ]]; then
+            echo "Intermediate step ${TAG} failed ... Restoring DB from ${SAFE} ..."
+            restoreDatabase $WORKDIR/documents/${SAFE}
+            echo "" >$WORKDIR/documents/install.lock && chown www-data:www-data $WORKDIR/documents/install.lock && chmod 400 $WORKDIR/documents/install.lock
+            return 1
+        fi
+        rm -rf ${TREE}
+    done
+    echo "##### Final step with the image version ${DOLI_VERSION}"
+    migrateDatabase
+}
+
+########################
 # Migrate the database to the current version if required
 function automigrate() {
     FROM_VERSION=$(mysql -N -u ${DOLI_DB_USER} -p${DOLI_DB_PASSWORD} -h ${DOLI_DB_HOST} -P ${DOLI_DB_HOST_PORT} ${DOLI_DB_NAME} -e "SELECT Q.LAST_INSTALLED_VERSION FROM (SELECT INET_ATON(CONCAT(value, REPEAT('.0', 3 - CHAR_LENGTH(value) + CHAR_LENGTH(REPLACE(value, '.', ''))))) as VERSION_ATON, value as LAST_INSTALLED_VERSION FROM llx_const WHERE name IN ('MAIN_VERSION_LAST_INSTALL', 'MAIN_VERSION_LAST_UPGRADE') and entity=0) Q ORDER BY VERSION_ATON DESC LIMIT 1")
@@ -193,7 +260,8 @@ echo "Migration script loaded ..."
 echo "   available commands:"
 echo "   - dumpDatabase [dumpfile.sql] : Dump the database to a file"
 echo "   - restoreDatabase [dumpfile.sql] : Restore the database from a file can be a .sql, .gz, .bz2 or .zip file"
-echo "   - migrateDatabase : Migrate the database to the current version"
+echo "   - migrateDatabase : Migrate the database to the current version (ONE major version at a time!)"
+echo "   - migrateStepwise <tag> [<tag>...] : Migrate through intermediate majors not in this image (ex: migrateStepwise 23.0.4 for 22.x -> 24.x)"
 echo "   - automigrate : Migrate the database to the current version if required"
 echo "   - mysql_shell : Open a mysql shell to the database"
 echo ""
