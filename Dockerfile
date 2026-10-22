@@ -13,7 +13,7 @@ ARG DOLI_VERSION=24.0.2
 ARG EINVOICING_REF=cf915aa83a8d22bf7eefbdea024277968345d943
 FROM  ismogroup/busybox:1.37.0-php-8.3-apache AS busyboxbuilder
 
-FROM php:8.3-apache-bookworm AS builder
+FROM php:8.5-apache-bookworm AS builder
 ARG TARGETARCH
 ARG DOLI_VERSION
 ARG EINVOICING_REF
@@ -85,7 +85,7 @@ RUN mkdir -p /custom/htdocs/einvoicing /tmp/dcm && cd /tmp/dcm && git init -q . 
     && rm -rf /tmp/dcm
 
 # Get Dolibarr
-FROM php:8.3-apache-bookworm
+FROM php:8.5-apache-bookworm
 ARG DOLI_VERSION
 LABEL maintainer="Ronan <ronan.le_meillat@ismo-group.co.uk>"
 LABEL org.opencontainers.image.version="${DOLI_VERSION}"
