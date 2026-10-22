@@ -46,7 +46,6 @@ RUN apt-get update -y \
     libmemcached-dev \
     cron 
 
-RUN docker-php-ext-install opcache
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) calendar intl mysqli pdo_mysql gd soap zip
 RUN  docker-php-ext-configure ldap --with-libdir=lib/$(gcc -dumpmachine)/ \
